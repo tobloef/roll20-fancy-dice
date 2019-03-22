@@ -1,7 +1,6 @@
-import editorUrls from "../utils/editor-urls";
 import {MESSAGE_KEY_DOM_LOADED} from "../constants";
 
-const isEditorRequest = (request) => {
+const shouldAllowCORS = (request) => {
     const url = request.url;
     if (url.startsWith("https://app.roll20.net/editor/setcampaign/")) {
         return true;
@@ -39,18 +38,18 @@ let alreadyRedirected = {};
 let redirectQueue = [];
 let isRedirecting = false;
 
-const beginRedirectQueue = () => {
+function beginRedirectQueue() {
     if (isRedirecting) {
         return;
     }
     isRedirecting = true;
     alreadyRedirected = {};
     redirectQueue = [];
-};
+}
 
-const endRedirectQueue = () => {
+function endRedirectQueue() {
     isRedirecting = false;
-};
+}
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg[MESSAGE_KEY_DOM_LOADED]) {
@@ -80,7 +79,7 @@ function handleBeforeRequest(req) {
 }
 
 function handleHeadersReceived(req) {
-    if (!isEditorRequest(req)) {
+    if (!shouldAllowCORS(req)) {
         return;
     }
     beginRedirectQueue();
@@ -97,7 +96,7 @@ function handleHeadersReceived(req) {
 
 chrome.webRequest.onHeadersReceived.addListener(
     handleHeadersReceived,
-    {urls: editorUrls},
+    {urls: ["*://app.roll20.net/*"]},
     ["blocking", "responseHeaders"]
 );
 

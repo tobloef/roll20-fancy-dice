@@ -1,10 +1,3 @@
-const findByIdAndRemove = function (id) {
-    const elem = document.getElementById(id);
-    if (elem) {
-        elem.remove();
-    }
-};
-
 const injectScript = function (name) {
     const s = document.createElement("script");
     s.async = false;
@@ -16,7 +9,6 @@ const injectScript = function (name) {
 };
 
 export {
-    findByIdAndRemove,
     injectScript
 };
 

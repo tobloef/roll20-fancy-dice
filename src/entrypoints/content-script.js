@@ -1,6 +1,5 @@
-import {findByIdAndRemove, injectScript} from "../utils/misc-utils";
+import {injectScript} from "../utils/misc-utils";
 import {
-    ELEMENT_ID_BOOTSTRAP_FLASH_WORKAROUND_STYLE,
     MESSAGE_KEY_CHROME_INJECTION_DONE,
     MESSAGE_KEY_DOM_LOADED,
     MESSAGE_KEY_LOAD_MODULES

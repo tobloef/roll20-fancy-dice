@@ -3,10 +3,14 @@ const shorterLoadingScreen = {
     replace: `"You will join the game shortly..."),i=1000)`,
 };
 
+const threeJSAllowCrossOrigin = {
+    find: `var e=new THREE.JSONLoader,t="js/models/";`,
+    replace: `var e=new THREE.JSONLoader,t="js/models/";e.crossOrigin="";`,
+};
+
 const exposeD20 = {
     find: "getPointer,degreesToRadians;",
     replace: "getPointer,degreesToRadians;window.d20=d20;window.exports=exports;",
-    urlIncludes: "assets/app.js",
 };
 
 const jsonReady = {
@@ -21,5 +25,7 @@ const jsonReady = {
 export default [
     jsonReady,
     shorterLoadingScreen,
-    exposeD20
+    threeJSAllowCrossOrigin,
+    raiseMax3DDice,
+    exposeD20,
 ]

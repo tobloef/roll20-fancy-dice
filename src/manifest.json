@@ -6,8 +6,7 @@
     "permissions": [
         "*://app.roll20.net/editor*",
         "webRequest",
-        "webRequestBlocking",
-        "storage"
+        "webRequestBlocking"
     ],
     "content_scripts": [
         {
