@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "Fancy Roll20 Dice",
+    "version": "1.0.0",
+    "description": "Fancy dice for Roll20.",
+    "permissions": [
+        "*://app.roll20.net/editor*",
+        "webRequest",
+        "webRequestBlocking",
+        "storage"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://app.roll20.net/editor*"
+            ],
+            "js": [
+                "content-script.js"
+            ]
+        }
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "web_accessible_resources": [
+        "*.js"
+    ]
+}
