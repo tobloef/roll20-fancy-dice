@@ -1,10 +1,10 @@
-import {injectScript} from "../utils/misc-utils";
+import {injectScript} from "../misc-utils.js";
 import {
     MESSAGE_KEY_CHROME_INJECTION_DONE,
     MESSAGE_KEY_DOM_LOADED,
     MESSAGE_KEY_LOAD_MODULES
 } from "../constants";
-import {getHooks, injectHooks} from "../utils/hook-utils";
+import {getHooks, injectHooks} from "../hook-utils.js";
 import hooks from "../hooks.js";
 import logger from "../logger.js";
 
