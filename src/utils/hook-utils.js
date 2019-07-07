@@ -1,4 +1,4 @@
-export const getHooks = (hooks, url) => {
+export function getHooks(hooks, url) {
     let hookQueue = [];
     for (let hook of hooks) {
         if (hook.urlIncludes && !url.includes(hook.urlIncludes)) {
@@ -7,11 +7,11 @@ export const getHooks = (hooks, url) => {
         hookQueue.push(hook);
     }
     return hookQueue;
-};
+}
 
-export const injectHooks = (source, hookQueue) => {
+export function injectHooks(source, hookQueue) {
     for (let hook of hookQueue) {
         source = source.replace(hook.find, hook.replace);
     }
     return source;
-};
+}

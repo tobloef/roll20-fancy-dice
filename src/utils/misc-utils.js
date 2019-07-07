@@ -1,4 +1,4 @@
-const injectScript = function (name) {
+function injectScript(name) {
     const s = document.createElement("script");
     s.async = false;
     s.src = chrome.extension.getURL(name);
@@ -6,7 +6,7 @@ const injectScript = function (name) {
         s.remove();
     };
     document.head.appendChild(s);
-};
+}
 
 export {
     injectScript

@@ -1,6 +1,6 @@
-const path = require('path');
-const fs = require('fs');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require("path");
+const fs = require("fs");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = () => {
     const entry = {};
@@ -11,7 +11,9 @@ module.exports = () => {
     const addStaticFolder = (root) => {
         fs.readdirSync(root).forEach(f => {
             const rootFile = root + f;
-            if (fs.lstatSync(rootFile).isDirectory()) return;
+            if (fs.lstatSync(rootFile).isDirectory()) {
+                return;
+            }
             addStaticFile(f, rootFile);
         });
     };
@@ -33,41 +35,33 @@ module.exports = () => {
     const sourceOutputPath = path.join(path.resolve(__dirname), "build");
 
     return {
-        performance: {
-            hints: false
-        },
-
+        mode: "development",
         context: __dirname,
         node: {__filename: true, __dirname: true},
         target: "web",
-
         entry: entry,
-
         output: {
             path: sourceOutputPath,
-            filename: '[name]',
+            filename: "[name]",
         },
-
         module: {
             rules: [
                 {
                     test: /\.js$/,
                     exclude: /node_modules/,
                     use: [{
-                        loader: 'babel-loader',
+                        loader: "babel-loader",
                     }],
                 }
             ],
         },
-
         resolve: {
-            extensions: ['.js'],
+            extensions: [".js"],
             modules: [
-                'src',
-                'node_modules',
+                "src",
+                "node_modules",
             ],
         },
-
         plugins: [
             new CopyWebpackPlugin(Object.keys(staticFiles).reduce((accum, mappedName) => {
                 accum.push({
@@ -77,7 +71,6 @@ module.exports = () => {
                 return accum;
             }, [])),
         ],
-
         devtool: "sourcemap"
     };
 };

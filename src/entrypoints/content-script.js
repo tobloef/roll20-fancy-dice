@@ -6,8 +6,22 @@ import {
 } from "../constants";
 import {getHooks, injectHooks} from "../utils/hook-utils";
 import hooks from "../hooks";
+import logger from "../logger.js";
 
+logger.debug("content-scripts.js");
 window.hasInjectedModules = false;
+window.addEventListener("message", handleMessage);
+waitForReady();
+
+function waitForReady() {
+    if (document.readyState !== "complete") {
+        setTimeout(waitForReady, 10);
+        return;
+    }
+    chrome.runtime.sendMessage({
+        [MESSAGE_KEY_DOM_LOADED]: true,
+    }, handleNewRedirectQueue);
+}
 
 function injectModules() {
     if (window.hasInjectedModules) {
@@ -16,7 +30,7 @@ function injectModules() {
     window.hasInjectedModules = true;
 }
 
-const handleMessage = (e) => {
+function handleMessage(e) {
     if (e.data[MESSAGE_KEY_LOAD_MODULES]) {
         window.injectWebsiteOK = true;
     }
@@ -26,21 +40,9 @@ const handleMessage = (e) => {
     if (window.injectBackgroundOK && window.injectWebsiteOK) {
         injectModules();
     }
-};
+}
 
-window.addEventListener("message", handleMessage);
-
-const waitForReady = () => {
-    if (document.readyState !== "complete") {
-        setTimeout(waitForReady, 10);
-        return;
-    }
-    chrome.runtime.sendMessage({
-        [MESSAGE_KEY_DOM_LOADED]: true,
-    }, handleNewRedirectQueue);
-};
-
-const handleNewRedirectQueue = (redirectQueue) => {
+function handleNewRedirectQueue(redirectQueue) {
     let numScriptsDone = 0;
     const scriptElements = [];
     for (let i = 0; i < redirectQueue.length; i++) {
@@ -66,13 +68,11 @@ const handleNewRedirectQueue = (redirectQueue) => {
                 }
             });
     }
-};
+}
 
-const finishInjecting = (scriptElements) => {
+function finishInjecting(scriptElements) {
     for (let scriptElement of scriptElements) {
         document.body.appendChild(scriptElement);
     }
     injectScript("post-injection.js");
-};
-
-waitForReady();
+}

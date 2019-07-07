@@ -26,6 +26,5 @@ export default [
     jsonReady,
     shorterLoadingScreen,
     threeJSAllowCrossOrigin,
-    raiseMax3DDice,
     exposeD20,
 ]
