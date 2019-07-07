@@ -22,12 +22,7 @@ logger.debug("background.js");
 attachListeners();
 
 function attachListeners() {
-    chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-        if (msg[MESSAGE_KEY_DOM_LOADED]) {
-            endRedirectQueue();
-            sendResponse(redirectQueue);
-        }
-    });
+    chrome.runtime.onMessage.addListener(handleMessage);
 
     chrome.webRequest.onHeadersReceived.addListener(
         handleHeadersReceived,
@@ -42,34 +37,11 @@ function attachListeners() {
     );
 }
 
-function shouldAllowCORS(request) {
-    const url = request.url;
-    if (url === "https://app.roll20.net/editor/") {
-        return true;
+function handleMessage(msg, sender, sendResponse) {
+    if (msg[MESSAGE_KEY_DOM_LOADED]) {
+        endRedirectQueue();
+        sendResponse(redirectQueue);
     }
-    if (url === "https://app.roll20.net/editor") {
-        return true;
-    }
-    if (url.startsWith("https://app.roll20.net/editor?")) {
-        return true;
-    }
-    if (url.startsWith("https://app.roll20.net/editor#")) {
-        return true;
-    }
-    return false;
-}
-
-function beginRedirectQueue() {
-    if (isRedirecting) {
-        return;
-    }
-    isRedirecting = true;
-    alreadyRedirected = {};
-    redirectQueue = [];
-}
-
-function endRedirectQueue() {
-    isRedirecting = false;
 }
 
 function handleBeforeRequest(req) {
@@ -106,4 +78,34 @@ function handleHeadersReceived(req) {
         header.value += " blob:";
     }
     return req;
+}
+
+function shouldAllowCORS(request) {
+    const url = request.url;
+    if (url === "https://app.roll20.net/editor/") {
+        return true;
+    }
+    if (url === "https://app.roll20.net/editor") {
+        return true;
+    }
+    if (url.startsWith("https://app.roll20.net/editor?")) {
+        return true;
+    }
+    if (url.startsWith("https://app.roll20.net/editor#")) {
+        return true;
+    }
+    return false;
+}
+
+function beginRedirectQueue() {
+    if (isRedirecting) {
+        return;
+    }
+    isRedirecting = true;
+    alreadyRedirected = {};
+    redirectQueue = [];
+}
+
+function endRedirectQueue() {
+    isRedirecting = false;
 }

@@ -1,8 +1,3 @@
-const shorterLoadingScreen = {
-    find: `"You will join the game shortly..."),i=6e4)`,
-    replace: `"You will join the game shortly..."),i=1000)`,
-};
-
 const threeJSAllowCrossOrigin = {
     find: `var e=new THREE.JSONLoader,t="js/models/";`,
     replace: `var e=new THREE.JSONLoader,t="js/models/";e.crossOrigin="";`,
@@ -24,7 +19,6 @@ const jsonReady = {
 
 export default [
     jsonReady,
-    shorterLoadingScreen,
     threeJSAllowCrossOrigin,
     exposeD20,
 ]
