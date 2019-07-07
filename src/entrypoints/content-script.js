@@ -5,7 +5,7 @@ import {
     MESSAGE_KEY_LOAD_MODULES
 } from "../constants";
 import {getHooks, injectHooks} from "../utils/hook-utils";
-import hooks from "../hooks";
+import hooks from "../hooks.js";
 import logger from "../logger.js";
 
 logger.debug("content-scripts.js");
@@ -53,7 +53,7 @@ function handleNewRedirectQueue(redirectQueue) {
                 {
                     let hookedData = originalScriptSource;
                     const hookQueue = getHooks(hooks, url);
-                    hookedData = injectHooks(hookedData, hookQueue);
+                    hookedData = injectHooks(hookedData, hookQueue, url);
                     const blob = new Blob([hookedData]);
                     const hookedScriptUrl = URL.createObjectURL(blob);
                     const scriptElement = document.createElement("script");
