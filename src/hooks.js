@@ -84,11 +84,16 @@ export function generateHooks(data) {
                 console.error("Error loading custom dice.", error);
             }
             (s=new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials))).castShadow=!1;
-            const playerDiceColor = new THREE.Color(+("0x" + c.replace("#", ""))); 
+            //const playerDiceColor = new THREE.Color(+("0x" + c.replace("#", "")));
+            const playerDiceColor = new THREE.Color(c); 
+            const white = new THREE.Color("white"); 
             for (let d = 0; d < s.material.materials.length; d++) {
                 if (customDice == null) {
                     s.material.materials[d].color = playerDiceColor;
                     s.material.materials[d].ambient = playerDiceColor;
+                } else {
+                    s.material.materials[d].color = white;
+                    s.material.materials[d].ambient = white;
                 }
                 s.material.materials[d].uniforms && (s.material.materials[d].uniforms.tDiffuse.value.anisotropy = u);
             }
