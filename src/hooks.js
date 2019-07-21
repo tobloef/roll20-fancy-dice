@@ -23,37 +23,7 @@ export function generateHooks(data) {
             name: "assetsURL",
             urlIncludes: appJSUrl,
             find: "",
-            replace: `window.fancyDice.assetsUrl = "${data.assetsUrl}"; console.log("Assets url:", window.fancyDice.assetsUrl);`
-        },
-        {
-            name: "threeJSAllowCrossOrigin",
-            urlIncludes: appJSUrl,
-            find: `var e=new THREE.JSONLoader,t="js/models/";`,
-            replace: `var e=new THREE.JSONLoader,t="js/models/";e.crossOrigin="anonymous";`,
-        },
-        {
-            name: "threeJSLogCrossOrigin",
-            urlIncludes: appJSUrl,
-            find: `(h=r.imageLoader).crossOrigin=r.crossOrigin,`,
-            replace: `(h=r.imageLoader).crossOrigin=r.crossOrigin,console.log("loader.crossOrigin:", h.crossOrigin),`,
-        },
-        {
-            name: "threeJSLogCrossOrigin2",
-            urlIncludes: appJSUrl,
-            find: `a.crossOrigin=this.crossOrigin),a.src=e,`,
-            replace: `a.crossOrigin=this.crossOrigin),console.log("Image (" + e + ") cross origin:", a.crossOrigin), a.src=e,`,
-        },
-        {
-            name: "test6",
-            urlIncludes: appJSUrl,
-            find: `THREE.Loader=function(e){`,
-            replace: `THREE.Loader=function(e){console.log("Creating new THREE.Loader");`,
-        },
-        {
-            name: "test6",
-            urlIncludes: appJSUrl,
-            find: `THREE.JSONLoader=function(e){`,
-            replace: `THREE.JSONLoader=function(e){console.log("Creating new THREE.JSONLoader");`,
+            replace: `window.fancyDice.assetsUrl = "${data.assetsUrl}";`
         },
         {
             name: "exposeD20",
@@ -101,12 +71,10 @@ export function generateHooks(data) {
             urlIncludes: appJSUrl,
             find: `(s=new THREE.Mesh(p[e],new THREE.MeshFaceMaterial(g[e]))).castShadow=!1;for(var l=new THREE.Color(+("0x"+c.replace("#",""))),d=0;d<s.material.materials.length;d++)s.material.materials[d].color=l,s.material.materials[d].ambient=l,s.material.materials[d].uniforms&&(s.material.materials[d].uniforms.tDiffuse.value.anisotropy=u);`,
             replace: `
-            console.log("Creating dice mesh.");
             let geometry = p[e];
             let materials = g[e];
             let customDice = null;
             try {
-                console.log("Player id:", playerid);
                 customDice = window.fancyDice.getCustomDiceByPlayerId(playerid);
                 if (customDice != null && customDice[e] != null) {
                     geometry = customDice[e].geometry;

@@ -30,7 +30,7 @@ const tempCode = `
         const fullCustomDice = {};
     
         const loader = new THREE.JSONLoader();
-        loader.crossOrigin = "anonymous";
+        loader.crossOrigin = "";
         for (const dice of customDiceData.dice) {
             try {
                 await new Promise((resolve, reject) => {
