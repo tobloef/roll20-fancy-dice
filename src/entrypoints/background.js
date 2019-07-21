@@ -1,4 +1,4 @@
-import {MESSAGE_KEY_DOM_LOADED} from "../constants";
+import MessageTypes from "../message-types.js";
 import logger from "../logger.js";
 
 const targetScripts = [
@@ -38,7 +38,7 @@ function attachListeners() {
 }
 
 function handleMessage(msg, sender, sendResponse) {
-    if (msg[MESSAGE_KEY_DOM_LOADED]) {
+    if (msg[MessageTypes.DOM_LOADED]) {
         endRedirectQueue();
         sendResponse(redirectQueue);
     }

@@ -1,45 +1,31 @@
 import {injectScript} from "../misc-utils.js";
-import {
-    MESSAGE_KEY_CHROME_INJECTION_DONE,
-    MESSAGE_KEY_DOM_LOADED,
-    MESSAGE_KEY_LOAD_MODULES
-} from "../constants";
+import MessageTypes from "../message-types.js";
 import {getHooks, injectHooks} from "../hook-utils.js";
-import hooks from "../hooks.js";
 import logger from "../logger.js";
+import {generateHooks} from "../hooks.js";
 
 logger.debug("content-scripts.js");
 window.hasInjectedModules = false;
-window.addEventListener("message", handleMessage);
-waitForReady();
 
-function waitForReady() {
+const hookData = {
+    assetsUrl: chrome.runtime.getURL("assets"),
+};
+const hooks = generateHooks(hookData);
+
+waitForReady(notifyDOMLoaded);
+
+function waitForReady(callback) {
     if (document.readyState !== "complete") {
-        setTimeout(waitForReady, 10);
+        setTimeout(() => waitForReady(callback), 10);
         return;
     }
+    callback();
+}
+
+function notifyDOMLoaded() {
     chrome.runtime.sendMessage({
-        [MESSAGE_KEY_DOM_LOADED]: true,
+        [MessageTypes.DOM_LOADED]: true,
     }, handleNewRedirectQueue);
-}
-
-function injectModules() {
-    if (window.hasInjectedModules) {
-        return;
-    }
-    window.hasInjectedModules = true;
-}
-
-function handleMessage(e) {
-    if (e.data[MESSAGE_KEY_LOAD_MODULES]) {
-        window.injectWebsiteOK = true;
-    }
-    if (e.data[MESSAGE_KEY_CHROME_INJECTION_DONE]) {
-        window.injectBackgroundOK = true;
-    }
-    if (window.injectBackgroundOK && window.injectWebsiteOK) {
-        injectModules();
-    }
 }
 
 function handleNewRedirectQueue(redirectQueue) {

@@ -1,7 +1,7 @@
 {
-    "name": "roll20-enhancement-suite",
+    "name": "roll20-fancy-dice",
     "description": "",
-    "author": "Justas Dabrila",
+    "author": "Tobias Løfgren",
     "license": "GPL-3.0",
     "version": "1.0.0",
     "private": true,

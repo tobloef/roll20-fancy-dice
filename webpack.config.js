@@ -12,13 +12,14 @@ module.exports = () => {
         fs.readdirSync(root).forEach(f => {
             const rootFile = root + f;
             if (fs.lstatSync(rootFile).isDirectory()) {
+                addStaticFolder(rootFile + "/");
                 return;
             }
-            addStaticFile(f, rootFile);
+            addStaticFile(rootFile, rootFile);
         });
     };
 
-    //addStaticFolder("./css/");
+    addStaticFolder("./assets/");
 
     addStaticFile("manifest.json", "./src/manifest.json");
 

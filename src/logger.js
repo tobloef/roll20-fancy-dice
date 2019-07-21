@@ -13,7 +13,7 @@ function warn(...args) {
 }
 
 function error(...args) {
-    console.warn(prefix, ...args);
+    console.error(prefix, ...args);
 }
 
 export default {

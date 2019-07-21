@@ -3,21 +3,26 @@ const tempCode = `
     const playerDiceMap = {};
     
     function getCustomDiceByPlayerId(playerId) {
+        console.log("getCustomDiceByPlayerId", playerId);
         // TODO: Do this in a way so that it works on first roll as well. Remember, no es6 in hooked code.
         if (playerDiceMap[playerId] != null) {
+            console.log("playerDiceMap[playerId]:", playerDiceMap[playerId]);
             return playerDiceMap[playerId];
         } else {
             // noinspection JSIgnoredPromiseFromCall
+            console.log("Have to get the custom dice data...");
             initializeCustomDice(playerId);
             return null;
         }
     }
     
     async function initializeCustomDice(playerId) {
-        const customDiceData = await fetchCustomDice(playerId);
-        const fullCustomDice = await loadCustomDice(customDiceData);
-        if (fullCustomDice != null) {
-            playerDiceMap[playerId] = fullCustomDice;
+        console.log("initializeCustomDice", playerId);
+        let customDiceData = await fetchCustomDice(playerId);
+        console.log("customDiceData:", customDiceData);
+        if (customDiceData != null) {
+            playerDiceMap[playerId] = await loadCustomDice(customDiceData);
+            console.log("playerDiceMap[playerId]:", playerDiceMap[playerId]);
         }
     }
     
@@ -40,6 +45,8 @@ const tempCode = `
                 console.error("Error loading THREE.js data for dice", dice.type, "at url", dice.url, error);
             }
         }
+        
+        return fullCustomDice;
     }
     
     const testCustomDice = {
@@ -49,7 +56,7 @@ const tempCode = `
                 type: "d4",
             },
             {
-                url: "/js/models/d6/d6tex2014.js?v=7",
+                url: window.fancyDice.assetsUrl + "/d6tex2014.json",
                 type: "d6",
             },
             {
@@ -84,16 +91,19 @@ const tempCode = `
     };
     
     async function fetchCustomDice(playerId) {
-        // TODO: Check if the server has it and then set the map.
-        if (playerId === "-LjCgFYxbhdFfpfdfvQ2") {
-            return testCustomDice;
+        try {
+            // TODO: Check if the server has it and then set the map.
+            if (playerId === "-LjCgFYxbhdFfpfdfvQ2") {
+                return testCustomDice;
+            }
+            return null;
+        } catch (error) {
+            console.error("Error fetching custom data data for player", playerId, error);
+            return null;
         }
-        return null;
     }
     
-    window.fancyDice = {
-        getCustomDiceByPlayerId
-    };
+    window.fancyDice.getCustomDiceByPlayerId = getCustomDiceByPlayerId;
 })();
 `;
 
