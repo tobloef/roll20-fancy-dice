@@ -26,7 +26,10 @@ function attachListeners() {
 
     chrome.webRequest.onHeadersReceived.addListener(
         handleHeadersReceived,
-        {urls: ["*://app.roll20.net/*"]},
+        {urls: [
+            "*://app.roll20.net/*"
+
+        ]},
         ["blocking", "responseHeaders"]
     );
 
@@ -65,7 +68,9 @@ function handleBeforeRequest(req) {
 }
 
 function handleHeadersReceived(req) {
-    if (!shouldAllowCORS(req)) {
+    const corsAllowed = shouldAllowCORS(req);
+    logger.debug(`Should CORS be allowed for URL ${req.url}`, corsAllowed ? "YES" : "NO");
+    if (!corsAllowed) {
         return;
     }
     beginRedirectQueue();
@@ -76,7 +81,10 @@ function handleHeadersReceived(req) {
             continue;
         }
         header.value += " blob:";
+        logger.debug("Changed content-security-policy header.");
     }
+    logger.debug("Resulting request:", req);
+    delete req.frameId;
     return req;
 }
 

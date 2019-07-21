@@ -29,7 +29,31 @@ export function generateHooks(data) {
             name: "threeJSAllowCrossOrigin",
             urlIncludes: appJSUrl,
             find: `var e=new THREE.JSONLoader,t="js/models/";`,
-            replace: `var e=new THREE.JSONLoader,t="js/models/";e.crossOrigin="";`,
+            replace: `var e=new THREE.JSONLoader,t="js/models/";e.crossOrigin="anonymous";`,
+        },
+        {
+            name: "threeJSLogCrossOrigin",
+            urlIncludes: appJSUrl,
+            find: `(h=r.imageLoader).crossOrigin=r.crossOrigin,`,
+            replace: `(h=r.imageLoader).crossOrigin=r.crossOrigin,console.log("loader.crossOrigin:", h.crossOrigin),`,
+        },
+        {
+            name: "threeJSLogCrossOrigin2",
+            urlIncludes: appJSUrl,
+            find: `a.crossOrigin=this.crossOrigin),a.src=e,`,
+            replace: `a.crossOrigin=this.crossOrigin),console.log("Image (" + e + ") cross origin:", a.crossOrigin), a.src=e,`,
+        },
+        {
+            name: "test6",
+            urlIncludes: appJSUrl,
+            find: `THREE.Loader=function(e){`,
+            replace: `THREE.Loader=function(e){console.log("Creating new THREE.Loader");`,
+        },
+        {
+            name: "test6",
+            urlIncludes: appJSUrl,
+            find: `THREE.JSONLoader=function(e){`,
+            replace: `THREE.JSONLoader=function(e){console.log("Creating new THREE.JSONLoader");`,
         },
         {
             name: "exposeD20",
@@ -38,7 +62,7 @@ export function generateHooks(data) {
             replace: `getPointer,degreesToRadians;window.d20=d20;window.exports=exports;`,
         },
         {
-            name: "remoteRollEvent",
+            name: "logRemoteRollEvent",
             urlIncludes: appJSUrl,
             find: `console.log("remote Roll!"),`,
             replace: `console.log("remote Roll!", e),`,

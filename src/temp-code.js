@@ -30,6 +30,7 @@ const tempCode = `
         const fullCustomDice = {};
     
         const loader = new THREE.JSONLoader();
+        loader.crossOrigin = "anonymous";
         for (const dice of customDiceData.dice) {
             try {
                 await new Promise((resolve, reject) => {
@@ -56,6 +57,7 @@ const tempCode = `
                 type: "d4",
             },
             {
+                //url: "/js/models/d6/d6tex2014.js?v=7",
                 url: window.fancyDice.assetsUrl + "/d6tex2014.json",
                 type: "d6",
             },

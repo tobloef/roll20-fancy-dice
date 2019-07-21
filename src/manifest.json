@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "description": "Fancy dice for Roll20.",
     "permissions": [
-        "*://app.roll20.net/editor*",
+        "*://app.roll20.net/*",
         "webRequest",
         "webRequestBlocking"
     ],
