@@ -2,10 +2,13 @@ const path = require("path");
 const fs = require("fs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
+const sourceOutputPath = path.join(path.resolve(__dirname), "build");
+
 module.exports = () => {
     const entry = {};
     const staticFiles = {};
 
+    // Helper functions
     const addStaticFile = (mappedName, sourcePath) => staticFiles[mappedName] = sourcePath;
     const addEntryPoint = (mappedName, sourcePath) => entry[mappedName] = sourcePath;
     const addStaticFolder = (root) => {
@@ -20,20 +23,10 @@ module.exports = () => {
     };
 
     addStaticFolder("./assets/");
-
     addStaticFile("manifest.json", "./src/manifest.json");
-
-    {
-        const root = "./src/entrypoints/";
-        fs.readdirSync(root).forEach(f => {
-            const rootFile = root + f;
-            if (fs.lstatSync(rootFile).isDirectory()) return;
-
-            addEntryPoint(f, rootFile);
-        });
-    }
-
-    const sourceOutputPath = path.join(path.resolve(__dirname), "build");
+    addEntryPoint("background.js", "./src/entrypoints/background/background.js");
+    addEntryPoint("content-script.js", "./src/entrypoints/content-script/content-script.js");
+    addEntryPoint("post-injection.js", "./src/entrypoints/post-injection/post-injection.js");
 
     return {
         mode: "development",

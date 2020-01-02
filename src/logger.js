@@ -1,4 +1,4 @@
-const prefix = "FANCY:";
+const prefix = "FANCYDICE:";
 
 function debug(...args) {
     console.debug(prefix, ...args);
