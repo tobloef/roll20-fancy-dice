@@ -1,3 +1,4 @@
+// language=ECMAScript 6
 const tempCode = `
 (function() {
     const playerDiceMap = {};

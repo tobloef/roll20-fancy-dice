@@ -21291,7 +21291,7 @@ function() {
         }
         ;
         var t = function(t) {
-            if (console.log("MESSAGE RECEIVED"),
+            if (console.log("MESSAGE RECEIVED"),1
             console.log(t),
             "setpurchased" == t.data && "https://marketplace.roll20.net" == t.origin)
                 $("#imagedialog .keywords").trigger("keyup"),
