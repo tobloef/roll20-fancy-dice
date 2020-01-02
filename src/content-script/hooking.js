@@ -176,11 +176,11 @@ export function injectHooks(source, hooks, url) {
  * Inject and run a script once on the page.
  */
 export function injectScript(url) {
-    const s = document.createElement("script");
-    s.async = false;
-    s.src = chrome.extension.getURL(url);
-    s.onload = () => {
-        s.remove();
+    const scriptElement = document.createElement("script");
+    scriptElement.async = false;
+    scriptElement.src = chrome.extension.getURL(url);
+    scriptElement.onload = () => {
+        scriptElement.remove();
     };
-    document.head.appendChild(s);
+    document.head.appendChild(scriptElement);
 }
