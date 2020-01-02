@@ -9,7 +9,6 @@ import ScriptUrls from "./script-urls.js";
  */
 const hooks = [
     initialSetup,
-    //interceptJqueryReady,
     /*{
         name: "exposeD20",
         scriptUrls: ["https://app.roll20.net/assets/app.js"],
