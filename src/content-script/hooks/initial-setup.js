@@ -4,7 +4,7 @@ import ScriptUrls from "../../script-urls.js";
  * Do setup needed for various other hooks to function.
  */
 const initialSetup = {
-    name: "initialSetup",
+    name: "initial setup",
     scriptUrls: [ScriptUrls.JQUERY, ScriptUrls.APP],
     find: "",
     replaceWith: `
