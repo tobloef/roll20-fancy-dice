@@ -1,8 +1,11 @@
 import logger from "../logger.js";
 
 function main() {
+    if (window.fancyDice == null) {
+        window.fancyDice = {};
+    }
     window.fancyDice.logger = logger;
-    logger.info("v3");
+    logger.info("v5");
     notifyBrowserThatDomLoaded();
     waitForDependencies(callPostInjectionCallbacks);
 }
@@ -20,6 +23,10 @@ function notifyBrowserThatDomLoaded() {
  * Call post-injection callbacks, usually created by various hooks.
  */
 function callPostInjectionCallbacks() {
+    if (window.fancyDice.postInjectionCallbacks == null) {
+        logger.warn("postInjectionCallbacks is null");
+        return;
+    }
     for (const callback of window.fancyDice.postInjectionCallbacks) {
         callback();
     }

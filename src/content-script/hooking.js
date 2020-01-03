@@ -2,13 +2,53 @@ import logger from "../logger.js";
 
 import initialSetup from "./hooks/initial-setup.js";
 import { testString } from "../utils.js";
-import ScriptUrls from "./script-urls.js";
+import ScriptUrls from "../script-urls.js";
 
 /**
  * Hooks to inject
  */
 const hooks = [
     initialSetup,
+    {
+        name: `logHookingSuccessful`,
+        scriptUrls: [ScriptUrls.APP],
+        find: ``,
+        replaceWith: `console.info("${logger.prefix}", "Hooking succeeded");`,
+    },
+    {
+        name: "interceptJqueryReady",
+        scriptUrls: [ScriptUrls.JQUERY],
+        find: "jQuery.ready.promise().done( fn );",
+        replaceWith: `window.fancyDice.postInjectionCallbacks.push(fn);`,
+    },
+
+    {
+        name: `setupRemoveExcessiveLogging`,
+        scriptUrls: [ScriptUrls.APP],
+        find: ``,
+        replaceWith: `window.didItTimes = 0;`,
+    },
+    {
+        name: "removeExcessiveLogging",
+        scriptUrls: [ScriptUrls.APP],
+        find: `console.log("MESSAGE RECEIVED"),console.log(t),`,
+        replaceWith: `(() => {
+            window.didItTimes++;
+            if (window.didItTimes === 200) {
+                console.warn("FANCYDICE MESSAGE RECEIVED hit max", t);
+            }
+        })(),`,
+    },
+
+    {
+        enabled: false,
+        name: "ffmpegWorkerReplacement",
+        scriptUrls: [ScriptUrls.APP],
+        find: /"\/js\/d20\/(ffmpeg-worker-webm\.[35]\.js)"/,
+        replaceWith: "`${window.fancyDice.assetsUrl}/$1`",
+    },
+
+
     /*{
         name: "exposeD20",
         scriptUrls: ["https://app.roll20.net/assets/app.js"],
@@ -21,28 +61,7 @@ const hooks = [
         find: `console.log("remote Roll!"),`,
         replaceWith: `window.fancyDice.logger.debug("remote Roll!", JSON.stringify(e)),`,
     },*/
-    {
-        name: "interceptJqueryReady",
-        scriptUrls: [ScriptUrls.JQUERY],
-        find: "jQuery.ready.promise().done( fn );",
-        replaceWith: `window.fancyDice.postInjectionCallbacks.push(fn);`,
-    },
-    {
-        scriptUrls: ["https://app.roll20.net/assets/app.js"],
-        find: ``,
-        replaceWith: `window.didItTimes = 0;`,
-    },
-    {
-        name: "removeExcessiveLogging",
-        scriptUrls: ["https://app.roll20.net/assets/app.js"],
-        find: `console.log("MESSAGE RECEIVED"),console.log(t),`,
-        replaceWith: `(() => {
-            if (window.didItTimes < 100) {
-                window.didItTimes++;
-                console.log("FANCYDICE MESSAGE RECEIVED", t);
-            }
-        })(),`,
-    },
+    
     /*{
         name: "tmp",
         scriptUrls: ["https://app.roll20.net/assets/app.js"],
@@ -151,7 +170,13 @@ export function getHooksForScript(hooks, scriptUrl) {
  * Check whether a hook should injected into a given script
  */
 function shouldUseHookForScript(hook, scriptUrl) {
-    return hook.scriptUrls.some(url => testString(url, scriptUrl));
+    if (hook.enabled === false) {
+        return false;
+    }
+    if (!hook.scriptUrls.some(url => testString(url, scriptUrl))) {
+        return false;
+    }
+    return true;
 }
 
 /**

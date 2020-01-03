@@ -1,11 +1,11 @@
-import ScriptUrls from "../script-urls.js";
+import ScriptUrls from "../../script-urls.js";
 
 /**
  * Do setup needed for various other hooks to function.
  */
 const initialSetup = {
     name: "initialSetup",
-    scriptUrls: [ScriptUrls.JQUERY],
+    scriptUrls: [ScriptUrls.JQUERY, ScriptUrls.APP],
     find: "",
     replaceWith: `
         if (window.fancyDice == null) {

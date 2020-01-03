@@ -1,6 +1,6 @@
 import { setCorsPolicy } from "./cors.js";
 import { handleMessage } from "./handle-message.js";
-import { interceptScripts } from "./intercept.js";
+import { interceptScripts, setShouldIntercept } from "./intercept.js";
 
 /**
  * Urls that the web request listeners should be active on.

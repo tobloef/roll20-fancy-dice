@@ -2,8 +2,23 @@
  * Urls of scripts not to intercept.
  */
 import { testString } from "../utils.js";
+import logger from "../logger.js";
+import ScriptUrls from "../script-urls.js";
 
-const ignoredScripts = [];
+const scriptsToIntercept = [
+    ScriptUrls.JQUERY,
+    ScriptUrls.JQUERY_MIGRATE,
+    ScriptUrls.FEATURE_DETECT,
+    ScriptUrls.PATIENCE,
+    ScriptUrls.STARTJS,
+    ScriptUrls.JQUERY_UI,
+    ScriptUrls.LOADING,
+    ScriptUrls.FIREBASE,
+    ScriptUrls.BASE,
+    ScriptUrls.APP,
+    ScriptUrls.TUTORIAL,
+    ScriptUrls.FFMPEG,
+];
 
 /**
  * Urls of scripts being intercepted.
@@ -17,9 +32,10 @@ export function interceptScripts(req) {
     if (req.type !== "script") {
         return null;
     }
-    if (ignoredScripts.some(script => testString(script, req.url))) {
+    if (!scriptsToIntercept.some(script => testString(script, req.url))) {
         return null;
     }
+    logger.debug(`Intercepting script "${req.url}".`);
     scriptsIntercepting.push(req.url);
     // Cancel the request
     return {

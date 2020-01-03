@@ -17,6 +17,7 @@ function error(...args) {
 }
 
 export default {
+    prefix,
     debug,
     info,
     warn,

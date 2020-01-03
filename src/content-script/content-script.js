@@ -24,11 +24,15 @@ function notifyDomReady() {
     const message = {
         type: MessageTypes.DOM_READY
     };
-    // Send the message and expect a list of scripts to hook into and insert into the page
-    chrome.runtime.sendMessage(message, async (scriptUrls) => {
-        await hookAndInsertScripts(scriptUrls);
-        injectScript("post-injection.js");
-    });
+    chrome.runtime.sendMessage(message, handleScriptsToInject);
+}
+
+/**
+ * Handle new list of scripts have been intercepted.
+ */
+async function handleScriptsToInject(scriptUrls) {
+    await hookAndInsertScripts(scriptUrls);
+    injectScript("post-injection.js");
 }
 
 main();

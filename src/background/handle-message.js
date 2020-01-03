@@ -1,5 +1,6 @@
-import { getScriptsIntercepting, setScriptsIntercepting } from "./intercept.js";
+import { getScriptsIntercepting, setScriptsIntercepting, setShouldIntercept } from "./intercept.js";
 import MessageTypes from "../message-types.js";
+import logger from "../logger.js";
 
 /**
  * Map of message types to handlers.
@@ -12,6 +13,7 @@ const messageHandlers = {
  * Handle messages form the background thread.
  */
 export function handleMessage(msg, sender, sendResponse) {
+    logger.debug(`Got message:`, msg);
     const handler = messageHandlers[msg.type];
     if (handler != null) {
         handler(msg, sender, sendResponse);
@@ -22,6 +24,7 @@ export function handleMessage(msg, sender, sendResponse) {
  * Handle that the DOM is ready for modification.
  */
 function handleDomLoaded(msg, sender, sendResponse) {
-    sendResponse(getScriptsIntercepting());
+    const scriptsIntercepting = getScriptsIntercepting();
+    sendResponse(scriptsIntercepting);
     setScriptsIntercepting([]);
 }
