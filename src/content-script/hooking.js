@@ -122,26 +122,6 @@ const hooks = [
         // language=JavaScript
         replaceWith: `getPointer,degreesToRadians;window.fancyDice.d20=d20;`,
     },
-
-    {
-        name: `Setup remove excessive logging when messaging bugs out`,
-        scriptUrls: [ScriptUrls.APP],
-        find: ``,
-        // language=JavaScript
-        replaceWith: `window.didItTimes = 0;`,
-    },
-    {
-        name: "Remove excessiveL logging when messaging bugs out",
-        scriptUrls: [ScriptUrls.APP],
-        find: `console.log("MESSAGE RECEIVED"),console.log(t),`,
-        // language=JavaScript
-        replaceWith: `(() => {
-            window.didItTimes++;
-            if (window.didItTimes === 200) {
-                console.warn("FANCYDICE MESSAGE RECEIVED hit max", t);
-            }
-        })(),`,
-    },
     {
         name: "Add roll event to roll queue data",
         scriptUrls: [ScriptUrls.APP],
@@ -169,16 +149,15 @@ const hooks = [
         // language=JavaScript
         replaceWith: `
             d20.tddice.createShape = function (rollEvent, e, t, n, o, r, a) {
-                var diceModel;
                 P = false;
-                var allDiceToRoll = "d100" === e ? ["dpct10s", "dpct1s"] : [e];
-                _.each(allDiceToRoll, function (diceToRoll) {
-                    var playerColor = new THREE.Color(+("0x" + c.replace("#", "")));
-                    var white = new THREE.Color("white");
-                    var customDice = window.fancyDice.getCustomDice(rollEvent.player, diceToRoll);
-                    var geometry;
-                    var materials;
-                    var color;
+                const allDiceToRoll = "d100" === e ? ["dpct10s", "dpct1s"] : [e];
+                _.each(allDiceToRoll, (diceToRoll) => {
+                    const playerColor = new THREE.Color(+("0x" + c.replace("#", "")));
+                    const white = new THREE.Color("white");
+                    const customDice = window.fancyDice.getCustomDice(rollEvent.player, diceToRoll);
+                    let geometry;
+                    let materials;
+                    let color;
                     if (customDice != null) {
                         geometry = customDice.geometry;
                         materials = customDice.materials;
@@ -189,9 +168,9 @@ const hooks = [
                         materials = g[diceToRoll];
                         color = playerColor;
                     }
-                    diceModel = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+                    const diceModel = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
                     diceModel.castShadow = false;
-                    for (var d = 0; d < diceModel.material.materials.length; d++) {
+                    for (let d = 0; d < diceModel.material.materials.length; d++) {
                         diceModel.material.materials[d].color = color;
                         diceModel.material.materials[d].ambient = color;
                         if (diceModel.material.materials[d].uniforms) {
@@ -210,21 +189,25 @@ const hooks = [
                     } else {
                         diceModel.maxroll = parseInt(diceToRoll.replace("d", ""), 10);
                     }
-                    var h = p[diceToRoll].vertices;
-                    var f = p[diceToRoll].faces;
-                    var m = [];
-                    var y = [];
-                    for (var b = 0; b < h.length; b++) {
-                        m.push(new CANNON.Vec3(h[b].x * diceModel.scale.x, h[b].y * diceModel.scale.y, h[b].z * diceModel.scale.z));
+                    const h = p[diceToRoll].vertices;
+                    const f = p[diceToRoll].faces;
+                    const m = [];
+                    const y = [];
+                    for (let b = 0; b < h.length; b++) {
+                        m.push(new CANNON.Vec3(
+                            h[b].x * diceModel.scale.x, 
+                            h[b].y * diceModel.scale.y, 
+                            h[b].z * diceModel.scale.z
+                        ));
                     }
-                    for (b = 0; b < f.length; b++) {
+                    for (let b = 0; b < f.length; b++) {
                         y.push([f[b].a, f[b].b, f[b].c]);
                     }
                     diceModel.body = new CANNON.Body({
                         mass: 1e3
                     });
                     diceModel.body.material = M;
-                    var w = new CANNON.ConvexPolyhedron(m, y);
+                    const w = new CANNON.ConvexPolyhedron(m, y);
                     diceModel.body.addShape(w, 0);
                     diceModel.body.position.set(t.x + (20 * k() - 10), t.y, t.z + (20 * k() - 10));
                     diceModel.body.quaternion.setFromAxisAngle(new CANNON.Vec3(r.x, r.y, r.z), r.a * Math.PI * 2);
@@ -233,11 +216,10 @@ const hooks = [
                     diceModel.body.linearDamping = .25;
                     diceModel.body.angularDamping = .25;
                     diceModel.body.isPlayingSound = !1;
-                    diceModel.body.addEventListener("collide", function (e) {
-                        diceid = e.contact.bj.id;
-                        colidedwithid = e.contact.bi.id;
-                        vel = e.contact.bj.velocity;
-                        maxvel = Math.max(Math.abs(n.x), Math.abs(n.y));
+                    diceModel.body.addEventListener("collide", (e) => {
+                        const diceid = e.contact.bj.id;
+                        const colidedwithid = e.contact.bi.id;
+                        const maxvel = Math.max(Math.abs(n.x), Math.abs(n.y));
                         if (!diceModel.body.isPlayingSound) {
                             diceModel.body.isPlayingSound = !0;
                             W(diceid, diceModel.dicetype, colidedwithid, maxvel)
