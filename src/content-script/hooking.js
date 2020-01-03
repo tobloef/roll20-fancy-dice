@@ -1,6 +1,5 @@
 import logger from "../logger.js";
 
-import initialSetup from "./hooks/initial-setup.js";
 import { testString } from "../utils.js";
 import ScriptUrls from "../script-urls.js";
 
@@ -8,6 +7,12 @@ import ScriptUrls from "../script-urls.js";
  * Hooks to inject
  */
 const hooks = [
+    {
+        name: `Test hook to check that everything it's working`,
+        scriptUrls: [ScriptUrls.APP],
+        find: ``,
+        replaceWith: `console.info("${logger.prefix}", "Hooking succeeded (v3)");`,
+    },
     {
         name: "Setup initial objects and global variables",
         scriptUrls: [ScriptUrls.JQUERY, ScriptUrls.APP],
@@ -23,12 +28,6 @@ const hooks = [
             window.fancyDice.assetsUrl = "${chrome.runtime.getURL("assets")}";
         }
     `
-    },
-    {
-        name: `Test hook to check that everything it's working`,
-        scriptUrls: [ScriptUrls.APP],
-        find: ``,
-        replaceWith: `console.info("${logger.prefix}", "Hooking succeeded");`,
     },
     {
         name: "Modify the jQuery ready function to let us manually call the callback",
@@ -55,26 +54,62 @@ const hooks = [
         })(),`,
     },
     {
-        name: "Log remote roll event",
+        name: "Add roll event to roll queue data",
         scriptUrls: [ScriptUrls.APP],
-        find: `console.log("remote Roll!"),`,
-        replaceWith: `window.fancyDice.logger.debug("Remote Roll:", e),`,
+        find: /S.push\({maxroll:n\[i\],callback:!1}\)/,
+        replaceWith: `
+            S.push({
+                maxroll: n[i],
+                callback: !1,
+                rollEvent: e
+            });
+        `,
+    },
+    {
+        name: "Declare getCustomDice",
+        scriptUrls: [ScriptUrls.APP],
+        find: "",
+        replaceWith: `
+            window.fancyDice.getCustomDice = function(playerId, diceType) {
+                return null;
+            };
+        `,
+    },
+    {
+        name: "Add roll event to createShape call",
+        scriptUrls: [ScriptUrls.APP],
+        find: `createShape("d"+S[a].maxroll,`,
+        replaceWith: `createShape(S[a].rollEvent,"d"+S[a].maxroll,`,
     },
     {
         name: "Custom createShape function declaration",
         scriptUrls: [ScriptUrls.APP],
-        find: `d20\\.tddice\\.createShape=[\\w\\W]+?;var L=\\{\\}`,
+        find: /d20\.tddice\.createShape=[\w\W]+?;var L={}/,
         // language=JavaScript
         replaceWith: `
-            d20.tddice.createShape = function (roll, diceType, t, n, o, r, a) {
-                window.fancyDice.logger.debug("createShape", "roll", roll);
+            d20.tddice.createShape = function (rollEvent, e, t, n, o, r, a) {
                 var diceModel;
                 P = false;
-                var allDiceToRoll = "d100" === diceType ? ["dpct10s", "dpct1s"] : [diceType];
+                var allDiceToRoll = "d100" === e ? ["dpct10s", "dpct1s"] : [e];
                 _.each(allDiceToRoll, function (diceToRoll) {
-                    diceModel = new THREE.Mesh(p[diceToRoll], new THREE.MeshFaceMaterial(g[diceToRoll]));
+                    var playerColor = new THREE.Color(+("0x" + c.replace("#", "")));
+                    var white = new THREE.Color("white");
+                    var customDice = window.fancyDice.getCustomDice(rollEvent.player, diceToRoll);
+                    var geometry;
+                    var materials;
+                    var color;
+                    if (customDice != null) {
+                        geometry = customDice.geometry;
+                        materials = customDice.materials;
+                        color = white;
+                    } else {
+                        window.fancyDice.logger.warn("No custom", diceToRoll, "found for player", rollEvent.player);
+                        geometry = p[diceToRoll];
+                        materials = g[diceToRoll];
+                        color = playerColor;
+                    }
+                    diceModel = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
                     diceModel.castShadow = false;
-                    var color = new THREE.Color(+("0x" + c.replace("#", "")));
                     for (var d = 0; d < diceModel.material.materials.length; d++) {
                         diceModel.material.materials[d].color = color;
                         diceModel.material.materials[d].ambient = color;
@@ -136,12 +171,6 @@ const hooks = [
             var L = {}
         `,
     },
-    {
-        name: "Add roll event to createShape call",
-        scriptUrls: [ScriptUrls.APP],
-        find: `createShape("d"+S[a].maxroll,`,
-        replaceWith: `createShape(e,"d"+S[a].maxroll,`,
-    },
 
 
 
@@ -151,40 +180,7 @@ const hooks = [
         scriptUrls: ["https://app.roll20.net/assets/app.js"],
         find: `function(){function cParticle(){`,
         replaceWith: `function(){${tempCode}function cParticle(){`,
-    },
-    {
-        name: "test1",
-        scriptUrls: ["https://app.roll20.net/assets/app.js"],
-        find: `(s=new THREE.Mesh(p[e],new THREE.MeshFaceMaterial(g[e]))).castShadow=!1;for(var l=new THREE.Color(+("0x"+c.replace("#",""))),d=0;d<s.material.materials.length;d++)s.material.materials[d].color=l,s.material.materials[d].ambient=l,s.material.materials[d].uniforms&&(s.material.materials[d].uniforms.tDiffuse.value.anisotropy=u);`,
-        replaceWith: `
-            let geometry = p[e];
-            let materials = g[e];
-            let customDice = null;
-            try {
-                customDice = window.fancyDice.getCustomDiceByPlayerId(playerid);
-                if (customDice != null && customDice[e] != null) {
-                    geometry = customDice[e].geometry;
-                    materials = customDice[e].materials;
-                }
-            } catch (error) {
-                console.error("Error loading custom dice.", error);
-            }
-            (s=new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials))).castShadow=!1;
-            //const playerDiceColor = new THREE.Color(+("0x" + c.replace("#", "")));
-            const playerDiceColor = new THREE.Color(c); 
-            const white = new THREE.Color("white"); 
-            for (let d = 0; d < s.material.materials.length; d++) {
-                if (customDice == null) {
-                    s.material.materials[d].color = playerDiceColor;
-                    s.material.materials[d].ambient = playerDiceColor;
-                } else {
-                    s.material.materials[d].color = white;
-                    s.material.materials[d].ambient = white;
-                }
-                s.material.materials[d].uniforms && (s.material.materials[d].uniforms.tDiffuse.value.anisotropy = u);
-            }
-        `,
-    },
+    }
     */
 ];
 

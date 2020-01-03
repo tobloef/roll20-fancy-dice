@@ -5,7 +5,6 @@ function main() {
         window.fancyDice = {};
     }
     window.fancyDice.logger = logger;
-    logger.info("v5");
     notifyBrowserThatDomLoaded();
     waitForDependencies(callPostInjectionCallbacks);
 }
