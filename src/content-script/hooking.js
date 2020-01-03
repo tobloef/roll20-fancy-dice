@@ -1,51 +1,140 @@
 import logger from "../logger.js";
-
 import { testString } from "../utils.js";
 import ScriptUrls from "../script-urls.js";
+import CustomDiceTypes from "../CustomDiceTypes.js";
+import DiceTypes from "../DiceTypes.js";
 
 /**
  * Hooks to inject
  */
 const hooks = [
     {
-        name: `Test hook to check that everything it's working`,
-        scriptUrls: [ScriptUrls.APP],
-        find: ``,
-        replaceWith: `console.info("${logger.prefix}", "Hooking succeeded (v3)");`,
+        name: "Preliminary setup",
+        scriptUrls: [ScriptUrls.APP, ScriptUrls.JQUERY],
+        find: "",
+        // language=JavaScript
+        replaceWith: `
+            fancyDice = window.fancyDice || {};
+            window.fancyDice = fancyDice;
+            fancyDice.postInjectionCallbacks = fancyDice.postInjectionCallbacks || [];
+            fancyDice.logger = fancyDice.logger || {
+                debug: (...args) => console.debug("${logger.prefix}", ...args),
+                info: (...args) => console.info("${logger.prefix}", ...args),
+                warn: (...args) => console.warn("${logger.prefix}", ...args),
+                error: (...args) => console.error("${logger.prefix}", ...args),
+            };
+        `
     },
     {
-        name: "Setup initial objects and global variables",
-        scriptUrls: [ScriptUrls.JQUERY, ScriptUrls.APP],
-        find: "",
+        name: "Main app setup",
+        scriptUrls: [ScriptUrls.APP],
+        find: "function(){function cParticle(){",
+        // language=JavaScript
         replaceWith: `
-        if (window.fancyDice == null) {
-            window.fancyDice = {};
-        }
-        if (window.fancyDice.postInjectionCallbacks == null) {
-            window.fancyDice.postInjectionCallbacks = [];
-        }
-        if (window.fancyDice.assetsUrl == null) {
-            window.fancyDice.assetsUrl = "${chrome.runtime.getURL("assets")}";
-        }
-    `
+            function() {
+            fancyDice.logger.info("Setting up...");
+            fancyDice.customDiceTypes = JSON.parse('${JSON.stringify(CustomDiceTypes)}');
+            fancyDice.diceTypes = JSON.parse('${JSON.stringify(DiceTypes)}');
+            fancyDice.assetsUrl = "${chrome.runtime.getURL("assets")}";
+            fancyDice.playersCustomDiceChoice = {};
+            fancyDice.customDiceCache = {};
+            fancyDice.getCustomDice = function(playerId, diceType) {
+                const customDiceChoice = fancyDice.playersCustomDiceChoice[playerId];
+                if (customDiceChoice == null) {
+                    return null;
+                }
+                const customDice = fancyDice.customDiceCache[customDiceChoice];
+                if (customDice == null) {
+                    return null;
+                }
+                return customDice[diceType];
+            };
+            fancyDice.updateCustomDiceChoices = (newChoices) => {
+                if (newChoices == null) {
+                    return;
+                }
+                for (const [playerId, choice] of Object.entries(newChoices)) {
+                    fancyDice.playersCustomDiceChoice[playerId] = choice;
+                }
+            };
+            fancyDice.fetchCustomDiceChoices = (playerIds, callback) => {
+                // TODO: Fetch
+                const playersCustomDiceChoice = {
+                    "-LjCgFYxbhdFfpfdfvQ2": "${CustomDiceTypes.FANCY}",
+                    "-LjDGvUKjsDkMPjUZkxj": "${CustomDiceTypes.SMILEY}",
+                };
+                callback(playersCustomDiceChoice);
+            };
+            const getNewPlayers = function() {
+                if (fancyDice.d20 == null) {
+                    return;
+                }
+                if (fancyDice.d20.Campaign == null) {
+                    return;
+                }
+                const playerIds = fancyDice.d20.Campaign.players.models.map(p => p.id);
+                const newPlayerIds = playerIds.filter(id => !Object.keys(fancyDice.playersCustomDiceChoice).includes(id));
+                if (newPlayerIds) {
+                    fancyDice.fetchCustomDiceChoices(newPlayerIds, fancyDice.updateCustomDiceChoices);
+                } 
+            };
+            getNewPlayers();
+            setInterval(getNewPlayers, 1000);
+            // Load custom dice cache
+            const cacheCustomDice = async () => {
+                const loader = new THREE.JSONLoader();
+                loader.crossOrigin = "";
+                for (const customDiceType of Object.values(fancyDice.customDiceTypes)) {
+                    const customDice = {};
+                    for (const diceType of Object.values(fancyDice.diceTypes)) {
+                        const url = fancyDice.assetsUrl + "/custom-dice/" + customDiceType + "/" + diceType + "/" + diceType + "tex.json";
+                        try {
+                            const response = await fetch(url);
+                            if (!response.ok) {
+                                throw new Error("Response not OK.");
+                            }
+                            customDice[diceType] = await new Promise((resolve, reject) => {
+                                setTimeout(() => reject(new Error("Loading model timed out (" + url + ").")), 1000);
+                                loader.load(url, (geometry, materials) => resolve({geometry, materials}));
+                            });
+                        } catch (error) {
+                            //fancyDice.logger.error("Error fetching dice texture info.", error);
+                        }
+                    }
+                    fancyDice.customDiceCache[customDiceType] = customDice;
+                }
+            };
+            cacheCustomDice();
+            function cParticle() {
+        `
     },
     {
         name: "Modify the jQuery ready function to let us manually call the callback",
         scriptUrls: [ScriptUrls.JQUERY],
         find: "jQuery.ready.promise().done( fn );",
+        // language=JavaScript
         replaceWith: `window.fancyDice.postInjectionCallbacks.push(fn);`,
+    },
+    {
+        name: `Expose D20 globally`,
+        scriptUrls: [ScriptUrls.APP],
+        find: `getPointer,degreesToRadians;`,
+        // language=JavaScript
+        replaceWith: `getPointer,degreesToRadians;window.fancyDice.d20=d20;`,
     },
 
     {
-        name: `Setup remove excessiveL logging when messaging bugs out`,
+        name: `Setup remove excessive logging when messaging bugs out`,
         scriptUrls: [ScriptUrls.APP],
         find: ``,
+        // language=JavaScript
         replaceWith: `window.didItTimes = 0;`,
     },
     {
         name: "Remove excessiveL logging when messaging bugs out",
         scriptUrls: [ScriptUrls.APP],
         find: `console.log("MESSAGE RECEIVED"),console.log(t),`,
+        // language=JavaScript
         replaceWith: `(() => {
             window.didItTimes++;
             if (window.didItTimes === 200) {
@@ -57,6 +146,7 @@ const hooks = [
         name: "Add roll event to roll queue data",
         scriptUrls: [ScriptUrls.APP],
         find: /S.push\({maxroll:n\[i\],callback:!1}\)/,
+        // language=JavaScript
         replaceWith: `
             S.push({
                 maxroll: n[i],
@@ -66,19 +156,10 @@ const hooks = [
         `,
     },
     {
-        name: "Declare getCustomDice",
-        scriptUrls: [ScriptUrls.APP],
-        find: "",
-        replaceWith: `
-            window.fancyDice.getCustomDice = function(playerId, diceType) {
-                return null;
-            };
-        `,
-    },
-    {
         name: "Add roll event to createShape call",
         scriptUrls: [ScriptUrls.APP],
         find: `createShape("d"+S[a].maxroll,`,
+        // language=JavaScript
         replaceWith: `createShape(S[a].rollEvent,"d"+S[a].maxroll,`,
     },
     {

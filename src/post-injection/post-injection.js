@@ -1,10 +1,6 @@
 import logger from "../logger.js";
 
 function main() {
-    if (window.fancyDice == null) {
-        window.fancyDice = {};
-    }
-    window.fancyDice.logger = logger;
     notifyBrowserThatDomLoaded();
     waitForDependencies(callPostInjectionCallbacks);
 }
