@@ -6,8 +6,8 @@ const DiceTypes = {
     d10: "d10",
     d12: "d12",
     d20: "d20",
-    dpct1s: "dpct1s",
-    dpct10s: "dpct10s",
+    dpct1s: "dPct1s",
+    dpct10s: "dPct10s",
 };
 
 export default DiceTypes;

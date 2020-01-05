@@ -43,11 +43,7 @@ const hooks = [
                 if (customDiceChoice == null) {
                     return null;
                 }
-                const customDice = fancyDice.customDiceCache[customDiceChoice];
-                if (customDice == null) {
-                    return null;
-                }
-                return customDice[diceType];
+                return fancyDice.customDiceCache[customDiceChoice];
             };
             fancyDice.updateCustomDiceChoices = (newChoices) => {
                 if (newChoices == null) {
@@ -60,8 +56,8 @@ const hooks = [
             fancyDice.fetchCustomDiceChoices = (playerIds, callback) => {
                 // TODO: Fetch
                 const playersCustomDiceChoice = {
-                    "-LjCgFYxbhdFfpfdfvQ2": "${CustomDiceTypes.FANCY}",
-                    "-LjDGvUKjsDkMPjUZkxj": "${CustomDiceTypes.SMILEY}",
+                    "-LjCgFYxbhdFfpfdfvQ2": "${CustomDiceTypes.INVERTED.key}",
+                    "-LjDGvUKjsDkMPjUZkxj": "${CustomDiceTypes.FANCY.key}",
                 };
                 callback(playersCustomDiceChoice);
             };
@@ -85,9 +81,11 @@ const hooks = [
                 const loader = new THREE.JSONLoader();
                 loader.crossOrigin = "";
                 for (const customDiceType of Object.values(fancyDice.customDiceTypes)) {
-                    const customDice = {};
+                    const customDice = {
+                        ...customDiceType
+                    };
                     for (const diceType of Object.values(fancyDice.diceTypes)) {
-                        const url = fancyDice.assetsUrl + "/custom-dice/" + customDiceType + "/" + diceType + "/" + diceType + "tex.json";
+                        const url = fancyDice.assetsUrl + "/custom-dice/" + customDiceType.key + "/" + diceType + "/" + diceType + "tex.json";
                         try {
                             const response = await fetch(url);
                             if (!response.ok) {
@@ -101,7 +99,7 @@ const hooks = [
                             //fancyDice.logger.error("Error fetching dice texture info.", error);
                         }
                     }
-                    fancyDice.customDiceCache[customDiceType] = customDice;
+                    fancyDice.customDiceCache[customDiceType.key] = customDice;
                 }
             };
             cacheCustomDice();
@@ -157,16 +155,18 @@ const hooks = [
                     const customDice = window.fancyDice.getCustomDice(rollEvent.player, diceToRoll);
                     let geometry;
                     let materials;
-                    let color;
-                    if (customDice != null) {
-                        geometry = customDice.geometry;
-                        materials = customDice.materials;
-                        color = white;
+                    let color = playerColor;
+                    if (customDice != null && customDice[diceToRoll] != null) {
+                        window.fancyDice.logger.warn(customDice);
+                        geometry = customDice[diceToRoll].geometry;
+                        materials = customDice[diceToRoll].materials;
+                        if (!customDice.useColor) {
+                            color = white;
+                        }
                     } else {
                         window.fancyDice.logger.warn("No custom", diceToRoll, "found for player", rollEvent.player);
                         geometry = p[diceToRoll];
                         materials = g[diceToRoll];
-                        color = playerColor;
                     }
                     const diceModel = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
                     diceModel.castShadow = false;
