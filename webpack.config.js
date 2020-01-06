@@ -9,26 +9,36 @@ module.exports = () => {
     const staticFiles = {};
 
     // Helper functions
-    const addStaticFile = (mappedName, sourcePath) => staticFiles[mappedName] = sourcePath;
-    const addEntryPoint = (mappedName, sourcePath) => entry[mappedName] = sourcePath;
-    const addStaticFolder = (root) => {
-        fs.readdirSync(root).forEach(f => {
-            const rootFile = root + f;
-            if (fs.lstatSync(rootFile).isDirectory()) {
-                addStaticFolder(rootFile + "/");
+    const addStaticFile = (sourcePath, mappedName) => staticFiles[mappedName] = sourcePath;
+    const addEntryPoint = (sourcePath, mappedName) => entry[mappedName] = sourcePath;
+    const addStaticFolder = (sourcePath, mappedName) => {
+        if (!sourcePath.endsWith("/")) {
+            sourcePath += "/";
+        }
+        if (mappedName == null) {
+            mappedName = sourcePath;
+        }
+        if (!mappedName.endsWith("/")) {
+            mappedName += "/";
+        }
+        fs.readdirSync(sourcePath).forEach(f => {
+            const subSourcePath = sourcePath + f;
+            const subMappedName = mappedName + f;
+            if (fs.lstatSync(subSourcePath).isDirectory()) {
+                addStaticFolder(subSourcePath, subMappedName);
                 return;
             }
-            addStaticFile(rootFile, rootFile);
+            addStaticFile(subSourcePath, subMappedName);
         });
     };
 
+    addStaticFile("./src/manifest.json", "manifest.json");
+    addStaticFolder("./src/popup/", "./popup/");
+    addStaticFolder("./src/welcome/", "./welcome/");
     addStaticFolder("./assets/");
-    addStaticFile("manifest.json", "./src/manifest.json");
-    addStaticFile("welcome.html", "./src/welcome.html");
-    addStaticFile("popup.html", "./src/popup.html");
-    addEntryPoint("background.js", "./src/background/background.js");
-    addEntryPoint("content-script.js", "./src/content-script/content-script.js");
-    addEntryPoint("post-injection.js", "./src/post-injection/post-injection.js");
+    addEntryPoint("./src/background/background.js", "background.js");
+    addEntryPoint("./src/content-script/content-script.js", "content-script.js");
+    addEntryPoint("./src/post-injection/post-injection.js", "post-injection.js");
 
     return {
         mode: "development",

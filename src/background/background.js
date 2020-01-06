@@ -41,7 +41,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     });
     if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
         chrome.tabs.create({
-            url: chrome.extension.getURL("welcome.html")
+            url: chrome.extension.getURL("welcome/welcome.html")
         });
     }
 });

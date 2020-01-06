@@ -1,0 +1,75 @@
+<!--suppress HtmlUnknownTarget -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Fancy Dice for Roll20</title>
+	<link rel="stylesheet" type="text/css" href="popup.css">
+</head>
+<body>
+	<div id="main-page">
+		<label class="large">Selected Dice</label>
+		<div class="horizontal-dice">
+			<img src="../assets/custom-dice/fancy/thumbnail.png" alt="Fancy">
+			<label>Fancy</label>
+		</div>
+		<fieldset>
+			<legend>Advanced settings</legend>
+			<div>
+				<input type="checkbox" id="use-selected-dice-globally">
+				<label for="use-selected-dice-globally">Use the selected dice for all campaigns</label>
+			</div>
+			<div>
+				<input type="checkbox" id="use-dice-color-override">
+				<label for="use-dice-color-override">Override Roll20's dice color</label>
+				<!--suppress HtmlFormInputWithoutLabel -->
+				<input type="color" id="dice-color-override">
+			</div>
+			<div>
+				<input type="checkbox" id="use-individual-dice">
+				<label for="use-individual-dice">Allow different custom dice for each type of dice</label>
+			</div>
+		</fieldset>
+	</div>
+
+	<div id="dice-selector" class="hidden">
+		<div class="header">
+			<img src="../assets/icons/back_arrow.png" id="back" alt="Back">
+			<h1>Select dice</h1>
+		</div>
+		<div class="dice-selector">
+			<fieldset class="filters">
+				<legend>Filters</legend>
+				<div>
+					<input type="checkbox" id="only-color-support-dice">
+					<label for="only-color-support-dice">Only show dice that support player colors</label>
+				</div>
+			</fieldset>
+			<div class="dice-list">
+				<div class="loader">
+
+				</div>
+				<div id="dice-choice-original" data-dice-choice="original" class="dice-box">
+					<img src="../assets/custom-dice/original/thumbnail.png" alt="Original">
+					<label for="dice-choice-original">Original</label>
+				</div>
+				<div id="dice-choice-inverted" data-dice-choice="inverted" class="dice-box">
+					<img src="../assets/custom-dice/inverted/thumbnail.png" alt="Inverted">
+					<label for="dice-choice-inverted">Inverted</label>
+				</div>
+				<div id="dice-choice-fancy" data-dice-choice="fancy" class="dice-box">
+					<img src="../assets/custom-dice/fancy/thumbnail.png" alt="Fancy">
+					<label for="dice-choice-fancy">Fancy</label>
+				</div>
+				<div id="dice-choice-pearlescent" data-dice-choice="pearlescent" class="dice-box">
+					<img src="../assets/custom-dice/pearlescent/thumbnail.png" alt="Pearlescent">
+					<label for="dice-choice-pearlescent">Pearlescent</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="popup.js"></script>
+</body>
+</html>
