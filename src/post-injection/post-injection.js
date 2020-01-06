@@ -1,4 +1,4 @@
-import logger from "../logger.js";
+import logger from "../shared/logger.js";
 
 function main() {
     notifyBrowserThatDomLoaded();

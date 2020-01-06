@@ -24,6 +24,8 @@ module.exports = () => {
 
     addStaticFolder("./assets/");
     addStaticFile("manifest.json", "./src/manifest.json");
+    addStaticFile("welcome.html", "./src/welcome.html");
+    addStaticFile("popup.html", "./src/popup.html");
     addEntryPoint("background.js", "./src/background/background.js");
     addEntryPoint("content-script.js", "./src/content-script/content-script.js");
     addEntryPoint("post-injection.js", "./src/post-injection/post-injection.js");

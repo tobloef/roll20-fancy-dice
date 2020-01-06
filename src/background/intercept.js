@@ -1,9 +1,9 @@
 /**
  * Urls of scripts not to intercept.
  */
-import { testString } from "../utils.js";
-import logger from "../logger.js";
-import ScriptUrls from "../script-urls.js";
+import { testString } from "../shared/utils.js";
+import logger from "../shared/logger.js";
+import ScriptUrls from "../shared/script-urls.js";
 
 const scriptsToIntercept = [
     ScriptUrls.JQUERY,

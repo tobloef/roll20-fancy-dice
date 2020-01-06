@@ -1,4 +1,4 @@
-import MessageTypes from "../message-types.js";
+import MessageTypes from "../shared/message-types.js";
 import { hookAndInsertScripts, injectScript } from "./hooking.js";
 
 function main() {

@@ -1,6 +1,6 @@
 import { getScriptsIntercepting, setScriptsIntercepting, setShouldIntercept } from "./intercept.js";
-import MessageTypes from "../message-types.js";
-import logger from "../logger.js";
+import MessageTypes from "../shared/message-types.js";
+import logger from "../shared/logger.js";
 
 /**
  * Map of message types to handlers.

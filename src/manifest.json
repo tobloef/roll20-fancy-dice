@@ -6,7 +6,8 @@
     "permissions": [
         "*://app.roll20.net/editor*",
         "webRequest",
-        "webRequestBlocking"
+        "webRequestBlocking",
+        "declarativeContent"
     ],
     "content_scripts": [
         {
@@ -25,6 +26,10 @@
     },
     "web_accessible_resources": [
         "*.js",
-        "assets/*"
-    ]
+        "assets/*",
+        "*.html"
+    ],
+    "page_action": {
+        "default_popup": "popup.html"
+    }
 }

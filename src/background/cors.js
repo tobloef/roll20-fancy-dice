@@ -2,7 +2,7 @@
  * Urls where CORS should be allowed on.
  */
 
-import {testString} from "../utils.js";
+import {testString} from "../shared/utils.js";
 
 const corsUrls = [
     /https:\/\/app\.roll20\.net\/editor\/?/

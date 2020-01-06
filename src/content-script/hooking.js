@@ -1,8 +1,8 @@
-import logger from "../logger.js";
-import { testString } from "../utils.js";
-import ScriptUrls from "../script-urls.js";
-import CustomDiceTypes from "../CustomDiceTypes.js";
-import DiceTypes from "../DiceTypes.js";
+import logger from "../shared/logger.js";
+import { testString } from "../shared/utils.js";
+import ScriptUrls from "../shared/script-urls.js";
+import CustomDiceTypes from "../shared/custom-dice-types.js";
+import DiceTypes from "../shared/dice-types.js";
 
 /**
  * Hooks to inject
@@ -56,7 +56,7 @@ const hooks = [
             fancyDice.fetchCustomDiceChoices = (playerIds, callback) => {
                 // TODO: Fetch
                 const playersCustomDiceChoice = {
-                    "-LjCgFYxbhdFfpfdfvQ2": "${CustomDiceTypes.INVERTED.key}",
+                    "-LjCgFYxbhdFfpfdfvQ2": "${CustomDiceTypes.PEARLESCENT.key}",
                     "-LjDGvUKjsDkMPjUZkxj": "${CustomDiceTypes.FANCY.key}",
                 };
                 callback(playersCustomDiceChoice);
