@@ -34,7 +34,7 @@ footer {
     display: flex;
     flex-direction: row;
     background: #00b8ee;
-    padding: 5px;
+    padding: 5px 0 10px 0;
 }
 
 footer a {
