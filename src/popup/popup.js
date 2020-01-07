@@ -3,16 +3,6 @@ document.body.onload = () => {
     let currentCampaign;
     let diceChoices = {};
 
-    const goToDiceSelector = () => {
-        document.querySelector("#main-page").classList.add("hidden");
-        document.querySelector("#dice-selection-page").classList.remove("hidden");
-    };
-
-    const goToMainPage = () => {
-        document.querySelector("#main-page").classList.remove("hidden");
-        document.querySelector("#dice-selection-page").classList.add("hidden");
-    };
-
     const sync = () => {
         chrome.storage.sync.get([
             "dice-choices",
@@ -24,6 +14,20 @@ document.body.onload = () => {
             // TODO
             console.log(data);
         });
+    };
+
+    const goToDiceSelector = () => {
+        document.querySelector("#main-page").classList.add("hidden");
+        document.querySelector("#dice-selection-page").classList.remove("hidden");
+        document.querySelector("header h1").textContent = "Select dice";
+        document.querySelector("#back").classList.remove("hidden");
+    };
+
+    const goToMainPage = () => {
+        document.querySelector("#main-page").classList.remove("hidden");
+        document.querySelector("#dice-selection-page").classList.add("hidden");
+        document.querySelector("header h1").textContent = "Settings";
+        document.querySelector("#back").classList.add("hidden");
     };
 
     const setDiceChoicesUI = (value) => {
