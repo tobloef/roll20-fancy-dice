@@ -1,0 +1,179 @@
+body, html {
+    font-size: medium;
+    width: 450px;
+    margin: 0;
+    user-select: none;
+    overflow: hidden;
+    max-height: 550px;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    width: 100%;
+    background: #00b8ee;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px 10px 10px 10px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: x-large;
+}
+
+header .header-button {
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+footer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    background: #00b8ee;
+    padding: 5px;
+}
+
+footer a {
+    flex: 1;
+    color: white;
+    text-align: center;
+}
+
+main {
+    overflow: auto;
+    padding: 10px 10px 15px 10px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+p {
+    margin: 0 0 5px 0;
+}
+
+.large {
+    font-size: large;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.loader {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dice {
+    background: #eee;
+    cursor: pointer;
+    border: 1px solid #ccc;
+}
+
+.dice span {
+    font-weight: bold;
+}
+
+.dice:hover {
+    background: #e0e0e0;
+}
+
+.dice.horizontal {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px 10px;
+}
+
+.dice.horizontal img {
+    width: 40px;
+    margin-right: 15px;
+}
+
+.dice.horizontal span {
+    font-size: large;
+}
+
+.dice.horizontal.smaller img {
+    width: 30px;
+}
+
+.dice.horizontal.smaller span {
+    font-size: medium;
+}
+
+.dice.box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    padding: 5px;
+    font-size: medium;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.dice.box img {
+    width: 80px;
+    height: 80px;
+}
+
+.dice.box span {
+    padding-top: 10px;
+    text-align: center;
+    word-wrap: break-word;
+    width: 100%;
+}
+
+.individual-dice-selector {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.individual-dice-selector .dice-type {
+    font-weight: bold;
+    width: 45px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+.individual-dice-selector .dice {
+    flex: 1;
+}
+
+.dice-color-override {
+    margin-left: 5px;
+}
+
+.dice-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.dice-list .dice {
+    margin-bottom: 10px;
+}
+
+.dice-list .spacer {
+    width: 100px;
+}
+
+.filters {
+    margin-bottom: 15px;
+}
+
+#main-selected-dice {
+    margin-bottom: 10px;
+}

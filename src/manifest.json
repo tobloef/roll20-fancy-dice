@@ -7,7 +7,8 @@
         "*://app.roll20.net/editor*",
         "webRequest",
         "webRequestBlocking",
-        "declarativeContent"
+        "declarativeContent",
+        "storage"
     ],
     "content_scripts": [
         {

@@ -39,6 +39,7 @@ module.exports = () => {
     addEntryPoint("./src/background/background.js", "background.js");
     addEntryPoint("./src/content-script/content-script.js", "content-script.js");
     addEntryPoint("./src/post-injection/post-injection.js", "post-injection.js");
+    addEntryPoint("./src/shared/popup-constants.js", "./popup/constants.js");
 
     return {
         mode: "development",

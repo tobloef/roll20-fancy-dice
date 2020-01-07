@@ -84,7 +84,7 @@ const hooks = [
                     const customDice = {
                         ...customDiceType
                     };
-                    for (const diceType of Object.values(fancyDice.diceTypes)) {
+                    for (const diceType of Object.keys(fancyDice.diceTypes)) {
                         const url = fancyDice.assetsUrl + "/custom-dice/" + customDiceType.key + "/" + diceType + "/" + diceType + "tex.json";
                         try {
                             const response = await fetch(url);
