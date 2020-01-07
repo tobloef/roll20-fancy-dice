@@ -100,78 +100,88 @@ document.body.onload = () => {
         return button;
     };
 
+    const insertIndividualDiceSelectors = () => {
+        for (const [diceType, diceTypeName] of Object.entries(window.diceTypes)) {
+            const div = document.createElement("div");
+            div.classList.add("individual-dice-selector");
+            div.dataset.diceType = diceType;
 
-    chrome.storage.sync.get([
-        "dice-choices",
-        "use-selected-dice-globally",
-        "use-dice-color-override",
-        "dice-color-override",
-        "use-individual-dice",
-    ], (result) => {
-        if (result["dice-choices"] != null) {
-            setDiceChoicesUI(JSON.parse(result["dice-choices"]));
+            const span = document.createElement("span");
+            span.textContent = diceTypeName;
+            span.classList.add("dice-type");
+
+            const button = createDiceButton(["horizontal", "smaller"]);
+            button.addEventListener("click", () => {
+                currentDiceTypeToSelect = diceType;
+                goToDiceSelector();
+            });
+            const choice = diceChoices[diceType] || window.customDiceTypes.ORIGINAL.key;
+            setDiceChoiceButton(button, choice);
+
+            div.appendChild(span);
+            div.appendChild(button);
+            document.querySelector("#individual-selected-dice").appendChild(div);
         }
-        if (result["use-selected-dice-globally"] != null) {
-            setUseSelectedDiceGloballyUI(result["use-selected-dice-globally"]);
-        }
-        if (result["use-dice-color-override"] != null) {
-            setUseDiceColorOverrideUI(result["use-dice-color-override"]);
-        }
-        if (result["dice-color-override"] != null) {
-            setDiceColorOverrideUI(result["dice-color-override"]);
-        }
-        if (result["use-individual-dice"] != null) {
-            setUseIndividualDiceUI(result["use-individual-dice"]);
-        }
-    });
+    };
 
-    for (const [diceType, diceTypeName] of Object.entries(window.diceTypes)) {
-        const div = document.createElement("div");
-        div.classList.add("individual-dice-selector");
-        div.dataset.diceType = diceType;
-
-        const span = document.createElement("span");
-        span.textContent = diceTypeName;
-        span.classList.add("dice-type");
-
-        const button = createDiceButton(["horizontal", "smaller"]);
-        button.addEventListener("click", () => {
-            currentDiceTypeToSelect = diceType;
-            goToDiceSelector();
-        });
-        const choice = diceChoices[diceType] || window.customDiceTypes.ORIGINAL.key;
-        setDiceChoiceButton(button, choice);
-
-        div.appendChild(span);
-        div.appendChild(button);
-        document.querySelector("#individual-selected-dice").appendChild(div);
-    }
-
-    for (const customDice of Object.values(window.customDiceTypes)) {
-        const button = createDiceButton(["box"]);
-        button.addEventListener("click", () => {
-            if (currentDiceTypeToSelect === "all") {
-                for (const diceType of Object.keys(window.diceTypes)) {
-                    diceChoices[diceType] = customDice.key;
+    const insertDiceChoices = (customDiceTypesToUse) => {
+        for (const customDice of customDiceTypesToUse) {
+            const button = createDiceButton(["box"]);
+            button.addEventListener("click", () => {
+                if (currentDiceTypeToSelect === "all") {
+                    for (const diceType of Object.keys(window.diceTypes)) {
+                        diceChoices[diceType] = customDice.key;
+                    }
+                } else {
+                    diceChoices[currentDiceTypeToSelect] = customDice.key;
                 }
-            } else {
-                diceChoices[currentDiceTypeToSelect] = customDice.key;
+                setDiceChoicesUI(diceChoices);
+                chrome.storage.sync.set({
+                    ["dice-choices"]: JSON.stringify(diceChoices)
+                }, sync);
+                goToMainPage();
+            });
+            setDiceChoiceButton(button, customDice.key);
+            document.querySelector("#dice-list").appendChild(button);
+        }
+        const spacersNeeded = 4 - (Object.keys(customDiceTypesToUse).length % 4);
+        for (let i = 0; i < spacersNeeded; i++) {
+            const spacer = document.createElement("div");
+            spacer.classList.add("spacer");
+            document.querySelector("#dice-list").appendChild(spacer);
+        }
+    };
+
+    const initializeValues = () => {
+        chrome.storage.sync.get([
+            "dice-choices",
+            "use-selected-dice-globally",
+            "use-dice-color-override",
+            "dice-color-override",
+            "use-individual-dice",
+        ], (result) => {
+            if (result["dice-choices"] != null) {
+                setDiceChoicesUI(JSON.parse(result["dice-choices"]));
             }
-            setDiceChoicesUI(diceChoices);
-            chrome.storage.sync.set({
-                ["dice-choices"]: JSON.stringify(diceChoices)
-            }, sync);
-            goToMainPage();
+            if (result["use-selected-dice-globally"] != null) {
+                setUseSelectedDiceGloballyUI(result["use-selected-dice-globally"]);
+            }
+            if (result["use-dice-color-override"] != null) {
+                setUseDiceColorOverrideUI(result["use-dice-color-override"]);
+            }
+            if (result["dice-color-override"] != null) {
+                setDiceColorOverrideUI(result["dice-color-override"]);
+            }
+            if (result["use-individual-dice"] != null) {
+                setUseIndividualDiceUI(result["use-individual-dice"]);
+            }
         });
-        setDiceChoiceButton(button, customDice.key);
-        document.querySelector("#dice-list").appendChild(button);
-    }
-    const spacersNeeded = 4 - (Object.keys(window.customDiceTypes).length % 4);
-    for (let i = 0; i < spacersNeeded; i++) {
-        const spacer = document.createElement("div");
-        spacer.classList.add("spacer");
-        document.querySelector("#dice-list").appendChild(spacer);
-    }
+    };
+
+    insertIndividualDiceSelectors();
+    insertDiceChoices(Object.values(window.customDiceTypes));
+    initializeValues();
+
     document.querySelector("#back").addEventListener("click", (e) => {
         goToMainPage();
     });
@@ -207,5 +217,13 @@ document.body.onload = () => {
         chrome.storage.sync.set({
             ["use-individual-dice"]: e.target.checked
         }, sync);
+    });
+
+    document.querySelector("#only-color-support-dice").addEventListener("input", (e) => {
+        document.querySelector("#dice-list").innerHTML = "";
+        const customDiceTypesToUse = Object.values(window.customDiceTypes)
+            .filter(d => !e.target.checked || d.useColor);
+        console.log("input", customDiceTypesToUse);
+        insertDiceChoices(customDiceTypesToUse);
     });
 };
