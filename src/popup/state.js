@@ -2,6 +2,7 @@ let state = {
     currentDiceTypeToSelect: null,
     diceChoices: {},
     campaignInfo: null,
+    roll20Ready: false,
 };
 
 export function setState(updates) {

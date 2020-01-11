@@ -4,29 +4,42 @@ import {useMessageHandlers} from "../shared/handle-messages.js";
 
 let backgroundPort;
 let popupPort;
+let roll20Ready = false;
+let campaignInfo = {
+    title: null,
+    id: null
+};
 
 function main() {
     if (window.fancyDice == null) {
         window.fancyDice = {};
     }
-    waitForDomReady(notifyDomReady);
     setupBackgroundConnection();
     setupPopupConnection();
+    waitForDomReady(domReady);
 }
 
 function setupBackgroundConnection() {
     backgroundPort = chrome.runtime.connect(fancyDice.extensionId);
     backgroundPort.onMessage.addListener(useMessageHandlers(backgroundPort, {
         [MessageTypes.SCRIPTS_TO_INJECT]: handleScriptsToInject,
+        [MessageTypes.CAMPAIGN_ID]: handleCampaignId,
+        [MessageTypes.ROLL20_READY]: handleRoll20Ready,
     }));
 }
 
 function setupPopupConnection() {
     chrome.runtime.onConnect.addListener((port) => {
         popupPort = port;
-        popupPort.onMessage.addListener({
-            // TODO
+        popupPort.onDisconnect.addListener((disconnectedPort) => {
+            if (popupPort === disconnectedPort) {
+                popupPort = null;
+            }
         });
+        popupPort.onMessage.addListener(useMessageHandlers(popupPort, {
+            [MessageTypes.GET_ROLL20_READY]: handleGetRoll20Ready,
+            [MessageTypes.GET_CAMPAIGN_INFO]: handleGetCampaignInfo,
+        }));
     });
 }
 
@@ -45,10 +58,11 @@ function waitForDomReady(callback) {
 /**
  * Notify the background thread that the DOM is ready to be modified.
  */
-function notifyDomReady() {
+function domReady() {
     backgroundPort.postMessage({
         type: MessageTypes.DOM_READY
     });
+    campaignInfo.title = getCampaignTitle();
 }
 
 /**
@@ -57,6 +71,31 @@ function notifyDomReady() {
 async function handleScriptsToInject(message, port) {
     await hookAndInsertScripts(message.scriptUrls);
     injectScript("post-injection.js");
+}
+
+function handleCampaignId(message, port) {
+    campaignInfo.id = message.campaignId;
+}
+
+function handleRoll20Ready(message, port) {
+    roll20Ready = true;
+    if (popupPort != null) {
+        popupPort.postMessage(message);
+    }
+}
+
+function handleGetCampaignInfo(message, port) {
+    port.postMessage({
+        type: MessageTypes.CAMPAIGN_INFO,
+        campaignInfo,
+    });
+}
+
+function handleGetRoll20Ready(message, port) {
+    port.postMessage({
+        type: MessageTypes.ROLL20_READY,
+        roll20Ready,
+    });
 }
 
 function getCampaignTitle() {

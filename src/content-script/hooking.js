@@ -1,6 +1,5 @@
 import logger from "../shared/logger.js";
 import {testString} from "../shared/utils.js";
-import messaging from "./hooks/messaging.js";
 import preliminarySetup from "./hooks/preliminary-setup.js";
 import mainSetup from "./hooks/main-setup.js";
 import jqueryReady from "./hooks/jquery-ready.js";
@@ -17,7 +16,6 @@ const hooks = [
     addRollEventToQueue,
     createShape,
     jqueryReady,
-    messaging,
     mainSetup,
     exposeD20,
     preliminarySetup,

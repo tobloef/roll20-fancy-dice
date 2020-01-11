@@ -2,7 +2,13 @@ import CustomDiceTypes from "../shared/custom-dice-types.js";
 import DiceTypes from "../shared/dice-types.js";
 import {getState, setState} from "./state.js";
 import {getCustomDiceTypeByKey, getFirstNotNull} from "../shared/utils.js";
-import {sync} from "./sync.js";
+import {
+    setDiceChoices,
+    setDiceOverrideColor,
+    setUseDiceColorOverride,
+    setUseIndividualDice,
+    setUseSelectedDiceGlobally
+} from "./storage.js";
 
 export function updateCampaignInfoText() {
     const {campaignInfo} = getState();
@@ -114,10 +120,8 @@ export function insertDiceChoices(customDiceTypesToUse) {
                 diceChoices[currentDiceTypeToSelect] = customDice.key;
             }
             updateSelectedDiceButtons();
-            chrome.storage.sync.set({
-                ["dice-choices"]: JSON.stringify(diceChoices)
-            }, sync);
             goToMainPage();
+            setDiceChoices(diceChoices);
         });
         setDiceChoiceButton(button, customDice.key);
         document.querySelector("#dice-list").appendChild(button);
@@ -131,23 +135,23 @@ export function insertDiceChoices(customDiceTypesToUse) {
 }
 
 export function initializeValues(data) {
-    if (result["dice-choices"] != null) {
+    if (data["dice-choices"] != null) {
         setState({
-            diceChoices: JSON.parse(result["dice-choices"])
+            diceChoices: JSON.parse(data["dice-choices"])
         });
         updateSelectedDiceButtons();
     }
-    if (result["use-selected-dice-globally"] != null) {
-        document.querySelector("#use-selected-dice-globally").checked = (result["use-selected-dice-globally"]);
+    if (data["use-selected-dice-globally"] != null) {
+        document.querySelector("#use-selected-dice-globally").checked = (data["use-selected-dice-globally"]);
     }
-    if (result["use-dice-color-override"] != null) {
-        document.querySelector("#use-dice-color-override").checked = (result["use-dice-color-override"]);
+    if (data["use-dice-color-override"] != null) {
+        document.querySelector("#use-dice-color-override").checked = (data["use-dice-color-override"]);
     }
-    if (result["dice-color-override"] != null) {
-        document.querySelector("#dice-color-override").value = (result["dice-color-override"]);
+    if (data["dice-color-override"] != null) {
+        document.querySelector("#dice-color-override").value = (data["dice-color-override"]);
     }
-    if (result["use-individual-dice"] != null) {
-        document.querySelector("#use-individual-dice").checked = result["use-individual-dice"];
+    if (data["use-individual-dice"] != null) {
+        document.querySelector("#use-individual-dice").checked = data["use-individual-dice"];
         updateDiceSelectors();
     }
 }
@@ -163,21 +167,15 @@ export function setupUiListeners() {
     });
 
     document.querySelector("#use-selected-dice-globally").addEventListener("input", (e) => {
-        chrome.storage.sync.set({
-            ["use-selected-dice-globally"]: e.target.checked
-        }, sync);
+        setUseSelectedDiceGlobally(e.target.checked);
     });
 
     document.querySelector("#use-dice-color-override").addEventListener("input", (e) => {
-        chrome.storage.sync.set({
-            ["use-dice-color-override"]: e.target.checked
-        }, sync);
+        setUseDiceColorOverride(e.target.checked);
     });
 
     document.querySelector("#dice-color-override").addEventListener("input", (e) => {
-        chrome.storage.sync.set({
-            ["dice-color-override"]: e.target.value
-        }, sync);
+        setDiceOverrideColor(e.target.value);
     });
 
     document.querySelector("#use-individual-dice").addEventListener("input", (e) => {
@@ -187,16 +185,24 @@ export function setupUiListeners() {
             diceChoices[diceType] = choice;
         }
         updateDiceSelectors();
-        chrome.storage.sync.set({
-            ["use-individual-dice"]: e.target.checked
-        }, sync);
+        setUseIndividualDice(e.target.checked);
     });
 
     document.querySelector("#only-color-support-dice").addEventListener("input", (e) => {
         document.querySelector("#dice-list").innerHTML = "";
         const customDiceTypesToUse = Object.values(CustomDiceTypes)
             .filter(d => !e.target.checked || d.useColor);
-        console.log("input", customDiceTypesToUse);
         insertDiceChoices(customDiceTypesToUse);
     });
+}
+
+export function updateWaitingForRoll20() {
+    const {roll20Ready} = getState();
+    if (roll20Ready) {
+        document.querySelector("#main-page").classList.remove("invisible");
+        document.querySelector("#waiting-for-roll20").classList.add("hidden");
+    } else {
+        document.querySelector("#main-page").classList.add("invisible");
+        document.querySelector("#waiting-for-roll20").classList.remove("hidden");
+    }
 }

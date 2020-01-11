@@ -1,6 +1,7 @@
 import ScriptUrls from "../../shared/script-urls.js";
 import CustomDiceTypes from "../../shared/custom-dice-types.js";
 import DiceTypes from "../../shared/dice-types.js";
+import MessageTypes from "../../shared/message-types.js";
 
 const mainSetup = {
     name: "Main app setup",
@@ -12,6 +13,7 @@ const mainSetup = {
             fancyDice.logger.info("Setting up...");
             fancyDice.customDiceTypes = JSON.parse('${JSON.stringify(CustomDiceTypes)}');
             fancyDice.diceTypes = JSON.parse('${JSON.stringify(DiceTypes)}');
+            fancyDice.messageTypes = JSON.parse('${JSON.stringify(MessageTypes)}');
             fancyDice.assetsUrl = "${chrome.runtime.getURL("assets")}";
             fancyDice.playersCustomDiceChoice = {};
             fancyDice.customDiceCache = {};
@@ -38,6 +40,21 @@ const mainSetup = {
                 };
                 callback(playersCustomDiceChoice);
             };
+            
+            // To background process
+            const port = chrome.runtime.connect(fancyDice.extensionId);
+            port.onMessage.addListener((message) => {
+                // TODO 
+            });
+    
+            port.postMessage({
+                type: fancyDice.messageTypes.ROLL20_READY
+            });
+            port.postMessage({
+                type: fancyDice.messageTypes.CAMPAIGN_ID,
+                campaignId: window.campaign_id,
+            });
+            
             const getNewPlayers = function() {
                 if (fancyDice.d20 == null) {
                     return;

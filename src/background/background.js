@@ -11,6 +11,18 @@ setupHookingConnection();
 setupContentScriptConnection();
 setupPostInstall();
 
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (var key in changes) {
+        var storageChange = changes[key];
+        console.log('Storage key "%s" in namespace "%s" changed. ' +
+            'Old value was "%s", new value is "%s".',
+            key,
+            namespace,
+            storageChange.oldValue,
+            storageChange.newValue);
+    }
+});
+
 function setupWebRequestListeners() {
     chrome.webRequest.onHeadersReceived.addListener(
         setCorsPolicy,
@@ -52,7 +64,8 @@ function setupHookingConnection() {
     chrome.runtime.onConnectExternal.addListener((port) => {
         hookingPort = port;
         hookingPort.onMessage.addListener(useMessageHandlers(hookingPort, {
-            // TODO
+            [MessageTypes.ROLL20_READY]: handleRoll20Ready,
+            [MessageTypes.CAMPAIGN_ID]: handleCampaignId,
         }));
     });
 }
@@ -64,6 +77,14 @@ function setupContentScriptConnection() {
             [MessageTypes.DOM_READY]: handleDomLoaded
         }));
     });
+}
+
+function handleCampaignId(message, port) {
+    contentScriptPort.postMessage(message);
+}
+
+function handleRoll20Ready(message, port) {
+    contentScriptPort.postMessage(message);
 }
 
 function handleDomLoaded(message, port) {

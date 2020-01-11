@@ -14,7 +14,10 @@
 	</header>
 
 	<main>
-		<div id="main-page" class="">
+		<div id="waiting-for-roll20" class="hidden">
+			<p>Waiting for Roll20 to load...</p>
+		</div>
+		<div id="main-page" class="invisible">
 			<p class="large bold" id="selected-dice-header">Selected dice <span id="campaign-info"/></p>
 			<div class="horizontal dice" id="main-selected-dice">
 				<img src="../assets/custom-dice/fancy/thumbnail.png" alt="Fancy">
@@ -39,7 +42,6 @@
 				</div>
 			</fieldset>
 		</div>
-
 		<div id="dice-selection-page" class="hidden">
 			<div class="dice-selector">
 				<fieldset class="filters">
@@ -60,7 +62,6 @@
 		<a href="https://twitter.com/tobloef" target="_newtab">Twitter</a>
 	</footer>
 
-	<script src="constants.js"></script>
 	<script src="popup.js"></script>
 </body>
 </html>

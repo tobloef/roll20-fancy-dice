@@ -53,6 +53,10 @@ main {
     display: none !important;
 }
 
+.invisible {
+    opacity: 0;
+}
+
 p {
     margin: 0 0 5px 0;
 }
@@ -187,4 +191,15 @@ footer a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+#waiting-for-roll20 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }

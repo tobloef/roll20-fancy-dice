@@ -2,7 +2,11 @@ import logger from "../shared/logger.js";
 
 function main() {
     notifyBrowserThatDomLoaded();
-    waitForDependencies(callPostInjectionCallbacks);
+    waitForDependencies(ready);
+}
+
+function ready() {
+    callPostInjectionCallbacks();
 }
 
 /**
