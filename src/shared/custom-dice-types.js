@@ -1,12 +1,12 @@
 const CustomDiceTypes = {
     ORIGINAL: {
         key: "original",
-        name: "Original Roll20 Dice",
+        name: "Original Roll20",
         useColor: true,
     },
     INVERTED: {
         key: "inverted",
-        name: "Colored Text (Black background)",
+        name: "Colored Text (Black)",
         useColor: true,
     },
     FANCY: {

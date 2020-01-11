@@ -1,5 +1,6 @@
 let currentDiceTypeToSelect;
 let diceChoices = {};
+let campaignInfo;
 
 const sync = () => {
     chrome.storage.sync.get([
@@ -12,6 +13,15 @@ const sync = () => {
         // TODO: Sync with content script and web socket
         console.log(data);
     });
+};
+
+const updateCampaignInfoText = () => {
+    if (campaignInfo == null || document.querySelector("#use-selected-dice-globally").checked) {
+        document.querySelector("#campaign-info").textContent = "(for all campaigns)";
+    } else {
+        document.querySelector("#campaign-info").textContent = `(for ${campaignInfo.title})`;
+    }
+
 };
 
 const goToDiceSelector = () => {
@@ -47,7 +57,7 @@ const updateSelectedDiceButtons = () => {
             setDiceChoiceButton(button, choice);
         });
     } else {
-        const choice = getFirstDiceChoiceNotNull() || window.customDiceTypes.ORIGINAL.key;
+        const choice = getFirstDiceChoiceNotNull() || window.CustomDiceTypes.ORIGINAL.key;
         setDiceChoiceButton(document.querySelector("#main-selected-dice"), choice);
     }
 };
@@ -67,7 +77,7 @@ const getFirstDiceChoiceNotNull = () => {
 };
 
 const getCustomDiceTypeByKey = (key) => {
-    return Object.values(window.customDiceTypes)
+    return Object.values(window.CustomDiceTypes)
         .find(t => t.key === key);
 };
 
@@ -85,7 +95,7 @@ const createDiceButton = (classes) => {
 };
 
 const insertIndividualDiceSelectors = () => {
-    for (const [diceType, diceTypeName] of Object.entries(window.diceTypes)) {
+    for (const [diceType, diceTypeName] of Object.entries(window.DiceTypes)) {
         const div = document.createElement("div");
         div.classList.add("individual-dice-selector");
         div.dataset.diceType = diceType;
@@ -99,7 +109,7 @@ const insertIndividualDiceSelectors = () => {
             currentDiceTypeToSelect = diceType;
             goToDiceSelector();
         });
-        const choice = diceChoices[diceType] || window.customDiceTypes.ORIGINAL.key;
+        const choice = diceChoices[diceType] || window.CustomDiceTypes.ORIGINAL.key;
         setDiceChoiceButton(button, choice);
 
         div.appendChild(span);
@@ -113,7 +123,7 @@ const insertDiceChoices = (customDiceTypesToUse) => {
         const button = createDiceButton(["box"]);
         button.addEventListener("click", () => {
             if (currentDiceTypeToSelect === "all") {
-                for (const diceType of Object.keys(window.diceTypes)) {
+                for (const diceType of Object.keys(window.DiceTypes)) {
                     diceChoices[diceType] = customDice.key;
                 }
             } else {
@@ -166,8 +176,27 @@ const initializeValues = () => {
 
 document.body.onload = () => {
     insertIndividualDiceSelectors();
-    insertDiceChoices(Object.values(window.customDiceTypes));
+    insertDiceChoices(Object.values(window.CustomDiceTypes));
     initializeValues();
+
+    // content-script
+    chrome.tabs.query({url: "*://app.roll20.net/editor*"}, (tabs) => {
+        const port = chrome.tabs.connect(tabs[0].id);
+        port.onMessage.addListener((message) => {
+            window.logger.debug("popup.js 2", message);
+            if (message.content === "ping") {
+                port.postMessage({
+                    content: "pong",
+                    from: "popup.js 2",
+                });
+            }
+        });
+        port.postMessage({
+            content: "pong",
+            from: "popup.js 2",
+        });
+    });
+
 
     document.querySelector("#back").addEventListener("click", (e) => {
         goToMainPage();
@@ -197,8 +226,8 @@ document.body.onload = () => {
     });
 
     document.querySelector("#use-individual-dice").addEventListener("input", (e) => {
-        const choice = getFirstDiceChoiceNotNull() || window.customDiceTypes.ORIGINAL.key;
-        for (const diceType of Object.keys(window.diceTypes)) {
+        const choice = getFirstDiceChoiceNotNull() || window.CustomDiceTypes.ORIGINAL.key;
+        for (const diceType of Object.keys(window.DiceTypes)) {
             diceChoices[diceType] = choice;
         }
         updateDiceSelectors();
@@ -209,7 +238,7 @@ document.body.onload = () => {
 
     document.querySelector("#only-color-support-dice").addEventListener("input", (e) => {
         document.querySelector("#dice-list").innerHTML = "";
-        const customDiceTypesToUse = Object.values(window.customDiceTypes)
+        const customDiceTypesToUse = Object.values(window.CustomDiceTypes)
             .filter(d => !e.target.checked || d.useColor);
         console.log("input", customDiceTypesToUse);
         insertDiceChoices(customDiceTypesToUse);

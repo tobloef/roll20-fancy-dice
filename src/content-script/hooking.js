@@ -9,13 +9,41 @@ import DiceTypes from "../shared/dice-types.js";
  */
 const hooks = [
     {
+        name: "Insert chrome messaging",
+        scriptUrls: [ScriptUrls.APP],
+        find: "",
+        // language=JavaScript
+        replaceWith: `
+            // hooking.js
+            const port = chrome.runtime.connect(fancyDice.extensionId);
+            port.onMessage.addListener((message) => {
+                window.fancyDice.logger.debug("hooking.js", message);
+                if (message.content === "ping") {
+                    port.postMessage({
+                        content: "pong",
+                        from: "hooking.js",
+                    });
+                }
+            });
+            port.postMessage({
+                content: "ping",
+                from: "hooking.js",
+            });
+        `,
+    },
+    {
         name: "Preliminary setup",
-        scriptUrls: [ScriptUrls.APP, ScriptUrls.JQUERY],
+        scriptUrls: [
+            ScriptUrls.APP,
+            ScriptUrls.JQUERY,
+            ScriptUrls.STARTJS
+        ],
         find: "",
         // language=JavaScript
         replaceWith: `
             fancyDice = window.fancyDice || {};
             window.fancyDice = fancyDice;
+            fancyDice.extensionId = "${chrome.runtime.id}";
             fancyDice.postInjectionCallbacks = fancyDice.postInjectionCallbacks || [];
             fancyDice.logger = fancyDice.logger || {
                 debug: (...args) => console.debug("${logger.prefix}", ...args),
@@ -141,6 +169,16 @@ const hooks = [
         replaceWith: `createShape(S[a].rollEvent,"d"+S[a].maxroll,`,
     },
     {
+        name: "Expose campaign ID",
+        scriptUrls: [ScriptUrls.STARTJS],
+        find: /const campaign_id = (.+);/,
+        // language=JavaScript
+        replaceWith: `
+            const campaign_id = $1;
+            window.fancyDice.campaignId = campaign_id;
+        `,
+    },
+    {
         name: "Custom createShape function declaration",
         scriptUrls: [ScriptUrls.APP],
         find: /d20\.tddice\.createShape=[\w\W]+?;var L={}/,
@@ -234,17 +272,6 @@ const hooks = [
             var L = {}
         `,
     },
-
-
-
-    /*
-    {
-        name: "test5",
-        scriptUrls: ["https://app.roll20.net/assets/app.js"],
-        find: `function(){function cParticle(){`,
-        replaceWith: `function(){${tempCode}function cParticle(){`,
-    }
-    */
 ];
 
 /**

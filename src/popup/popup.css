@@ -11,8 +11,6 @@ body, html {
 
 header {
     width: 100%;
-    background: #00b8ee;
-    color: white;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -33,19 +31,22 @@ footer {
     width: 100%;
     display: flex;
     flex-direction: row;
-    background: #00b8ee;
     padding: 5px 0 10px 0;
+    justify-content: space-around;
 }
 
 footer a {
-    flex: 1;
-    color: white;
     text-align: center;
 }
 
 main {
     overflow: auto;
     padding: 10px 10px 15px 10px;
+}
+
+.background {
+    background: #00b8ee;
+    color: white;
 }
 
 .hidden {
@@ -176,4 +177,14 @@ p {
 
 #main-selected-dice {
     margin-bottom: 10px;
+}
+
+footer a {
+    color: inherit;
+}
+
+#selected-dice-header {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

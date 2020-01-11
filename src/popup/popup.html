@@ -8,14 +8,14 @@
 	<link rel="stylesheet" type="text/css" href="popup.css">
 </head>
 <body>
-	<header class="header">
+	<header class="background">
 		<span class="header-button hidden" id="back">Back</span>
 		<h1>Settings</h1>
 	</header>
 
 	<main>
 		<div id="main-page" class="">
-			<p class="large bold">Selected dice</p>
+			<p class="large bold" id="selected-dice-header">Selected dice <span id="campaign-info"/></p>
 			<div class="horizontal dice" id="main-selected-dice">
 				<img src="../assets/custom-dice/fancy/thumbnail.png" alt="Fancy">
 				<span>Fancy</span>
@@ -54,7 +54,7 @@
 		</div>
 	</main>
 
-	<footer>
+	<footer class="background">
 		<a href="https://github.com/tobloef/roll20-fancy-dice/wiki" target="_newtab">Help</a>
 		<a href="https://github.com/tobloef/roll20-fancy-dice" target="_newtab">GitHub</a>
 		<a href="https://twitter.com/tobloef" target="_newtab">Twitter</a>

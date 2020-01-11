@@ -1,5 +1,9 @@
-import diceTypes from "./dice-types.js";
-import customDiceTypes from "./custom-dice-types.js";
+import DiceTypes from "./dice-types.js";
+import CustomDiceTypes from "./custom-dice-types.js";
+import MessageTypes from "./message-types.js";
+import logger from "./logger.js";
 
-window.diceTypes = diceTypes;
-window.customDiceTypes = customDiceTypes;
+window.DiceTypes = DiceTypes;
+window.CustomDiceTypes = CustomDiceTypes;
+window.MessageTypes = MessageTypes;
+window.logger = logger;

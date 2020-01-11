@@ -25,6 +25,11 @@
             "background.js"
         ]
     },
+    "externally_connectable": {
+        "matches": [
+            "*://app.roll20.net/editor*"
+        ]
+    },
     "web_accessible_resources": [
         "*"
     ],
