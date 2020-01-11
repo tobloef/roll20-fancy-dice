@@ -33,13 +33,14 @@ module.exports = () => {
     };
 
     addStaticFile("./src/manifest.json", "manifest.json");
-    addStaticFolder("./src/popup/", "./popup/");
+    addStaticFile("./src/popup/popup.html", "./popup/popup.html");
+    addStaticFile("./src/popup/popup.css", "./popup/popup.css");
     addStaticFolder("./src/welcome/", "./welcome/");
     addStaticFolder("./assets/");
     addEntryPoint("./src/background/background.js", "background.js");
     addEntryPoint("./src/content-script/content-script.js", "content-script.js");
     addEntryPoint("./src/post-injection/post-injection.js", "post-injection.js");
-    addEntryPoint("./src/shared/popup-constants.js", "./popup/constants.js");
+    addEntryPoint("./src/popup/popup.js", "./popup/popup.js");
 
     return {
         mode: "development",

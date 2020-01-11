@@ -31,6 +31,9 @@ function checkShouldAllowCors(request) {
  * Allow blob url CORS.
  */
 function allowBlobCors(req) {
+    if (req.responseHeaders == null) {
+        return;
+    }
     for (let i = 0; i < req.responseHeaders.length; i++) {
         const header = req.responseHeaders[i];
         const name = header.name.toLowerCase();

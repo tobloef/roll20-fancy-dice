@@ -1,43 +1,32 @@
 import MessageTypes from "../shared/message-types.js";
 import { hookAndInsertScripts, injectScript } from "./hooking.js";
 import logger from "../shared/logger.js";
+import {useMessageHandlers} from "../shared/handle-messages.js";
+
+let backgroundPort;
+let popupPort;
 
 function main() {
     if (window.fancyDice == null) {
         window.fancyDice = {};
     }
     waitForDomReady(notifyDomReady);
+    setupBackgroundConnection();
+    setupPopupConnection();
+}
 
-    // background.js
-    const port = chrome.runtime.connect(fancyDice.extensionId);
-    port.onMessage.addListener((message) => {
-        console.debug("content-script.js 1", message);
-        if (message.content === "ping") {
-            port.postMessage({
-                content: "pong",
-                from: "content-script.js 1",
-            });
-        }
-    });
-    port.postMessage({
-        content: "ping",
-        from: "content-script.js 1",
-    });
+function setupBackgroundConnection() {
+    backgroundPort = chrome.runtime.connect(fancyDice.extensionId);
+    backgroundPort.onMessage.addListener(useMessageHandlers(backgroundPort, {
+        [MessageTypes.SCRIPTS_TO_INJECT]: handleScriptsToInject,
+    }));
+}
 
-    // popup.js
+function setupPopupConnection() {
     chrome.runtime.onConnect.addListener((port) => {
-        port.onMessage.addListener((message) => {
-            logger.debug("content-script.js 2", message);
-            if (message.content === "ping") {
-                port.postMessage({
-                    content: "pong",
-                    from: "content-script.js 2",
-                });
-            }
-        });
-        port.postMessage({
-            content: "ping",
-            from: "content-script.js 2",
+        popupPort = port;
+        popupPort.onMessage.addListener({
+            // TODO
         });
     });
 }
@@ -58,40 +47,24 @@ function waitForDomReady(callback) {
  * Notify the background thread that the DOM is ready to be modified.
  */
 function notifyDomReady() {
-    const message = {
+    backgroundPort.postMessage({
         type: MessageTypes.DOM_READY
-    };
-    chrome.runtime.sendMessage(message, handleScriptsToInject);
+    });
 }
 
 /**
  * Handle new list of scripts have been intercepted.
  */
-async function handleScriptsToInject(scriptUrls) {
-    logger.debug("handleScriptsToInject", scriptUrls);
-    if (scriptUrls != null) {
-        await hookAndInsertScripts(scriptUrls);
-        injectScript("post-injection.js");
-    }
+async function handleScriptsToInject(message, port) {
+    await hookAndInsertScripts(message.scriptUrls);
+    injectScript("post-injection.js");
 }
 
-function setCampaignTitle() {
+function getCampaignTitle() {
     const titleElement = document.querySelector("title");
-    if (titleElement == null) {
-        logger.warn("Failed to get campaign title. Page title element was null.");
-        return;
-    }
     const title = titleElement.textContent;
-    if (title == null) {
-        logger.warn("Failed to get campaign title. Page title text was null.");
-        return;
-    }
     const campaignTitle = title.split("|")[0];
-    if (campaignTitle == null) {
-        logger.warn("Failed to get campaign title. Campaign title part of page title was null.");
-        return;
-    }
-    window.fancyDice.campaignTitle = campaignTitle.trim();
+    return campaignTitle.trim();
 }
 
 main();

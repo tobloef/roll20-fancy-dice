@@ -1,82 +1,75 @@
 import {setCorsPolicy} from "./cors.js";
-import {handleMessage} from "./handle-message.js";
-import {interceptScripts} from "./intercept.js";
-import logger from "../shared/logger.js";
+import {getScriptsIntercepting, interceptScripts, setScriptsIntercepting} from "./intercept.js";
+import {useMessageHandlers} from "../shared/handle-messages.js";
+import MessageTypes from "../shared/message-types.js";
 
-/**
- * Urls that the web request listeners should be active on.
- */
-const urlsToListenOn = [
-    "*://app.roll20.net/*"
-];
+let hookingPort;
+let contentScriptPort;
 
-// Intercept headers to allow CORS if needed.
-chrome.webRequest.onHeadersReceived.addListener(
-    setCorsPolicy,
-    {urls: urlsToListenOn},
-    ["blocking", "responseHeaders"]
-);
-// Intercept scripts to instead load hooked ones.
-chrome.webRequest.onBeforeRequest.addListener(
-    interceptScripts,
-    {urls: urlsToListenOn},
-    ["blocking"]
-);
+setupWebRequestListeners();
+setupHookingConnection();
+setupContentScriptConnection();
+setupPostInstall();
 
-chrome.runtime.onMessage.addListener(handleMessage);
+function setupWebRequestListeners() {
+    chrome.webRequest.onHeadersReceived.addListener(
+        setCorsPolicy,
+        {urls: ["*://app.roll20.net/*"]},
+    );
 
-// hooking.js
-chrome.runtime.onConnectExternal.addListener((port) => {
-    port.onMessage.addListener((message) => {
-        logger.debug("background.js 1", message);
-        if (message.content === "ping") {
-            port.postMessage({
-                content: "pong",
-                from: "background.js 1",
-            });
-        }
-    });
-    port.postMessage({
-        content: "ping",
-        from: "background.js 1",
-    });
-});
+    chrome.webRequest.onBeforeRequest.addListener(
+        interceptScripts,
+        {urls: ["*://app.roll20.net/*"]},
+        ["blocking"]
+    );
+}
 
-// content-script.js
-chrome.runtime.onConnect.addListener((port) => {
-    port.onMessage.addListener((message) => {
-        logger.debug("background.js 2", message);
-        if (message.content === "ping") {
-            port.postMessage({
-                content: "pong",
-                from: "background.js 2",
-            });
-        }
-    });
-    port.postMessage({
-        content: "ping",
-        from: "background.js 2",
-    });
-});
-
-chrome.runtime.onInstalled.addListener((details) => {
-    chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
-        chrome.declarativeContent.onPageChanged.addRules([{
-            conditions: [
-                new chrome.declarativeContent.PageStateMatcher({
-                    pageUrl: {
-                        urlMatches: "https?://app.roll20.net/.*"
-                    },
-                })
-            ],
-            actions: [
-                new chrome.declarativeContent.ShowPageAction()
-            ]
-        }]);
-    });
-    if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-        chrome.tabs.create({
-            url: chrome.extension.getURL("welcome/welcome.html")
+function setupPostInstall() {
+    chrome.runtime.onInstalled.addListener((details) => {
+        chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
+            chrome.declarativeContent.onPageChanged.addRules([{
+                conditions: [
+                    new chrome.declarativeContent.PageStateMatcher({
+                        pageUrl: {
+                            urlMatches: "https?://app.roll20.net/.*"
+                        },
+                    })
+                ],
+                actions: [
+                    new chrome.declarativeContent.ShowPageAction()
+                ]
+            }]);
         });
-    }
-});
+        if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+            chrome.tabs.create({
+                url: chrome.extension.getURL("welcome/welcome.html")
+            });
+        }
+    });
+}
+
+function setupHookingConnection() {
+    chrome.runtime.onConnectExternal.addListener((port) => {
+        hookingPort = port;
+        hookingPort.onMessage.addListener(useMessageHandlers(hookingPort, {
+            // TODO
+        }));
+    });
+}
+
+function setupContentScriptConnection() {
+    chrome.runtime.onConnect.addListener((port) => {
+        contentScriptPort = port;
+        contentScriptPort.onMessage.addListener(useMessageHandlers(contentScriptPort, {
+            [MessageTypes.DOM_READY]: handleDomLoaded
+        }));
+    });
+}
+function handleDomLoaded(message, port) {
+    const scriptsIntercepting = getScriptsIntercepting();
+    port.postMessage({
+        type: MessageTypes.SCRIPTS_TO_INJECT,
+        scriptUrls: scriptsIntercepting,
+    });
+    setScriptsIntercepting([]);
+}
