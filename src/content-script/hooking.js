@@ -1,8 +1,5 @@
 import logger from "../shared/logger.js";
-import { testString } from "../shared/utils.js";
-import ScriptUrls from "../shared/script-urls.js";
-import CustomDiceTypes from "../shared/custom-dice-types.js";
-import DiceTypes from "../shared/dice-types.js";
+import {testString} from "../shared/utils.js";
 import messaging from "./hooks/messaging.js";
 import preliminarySetup from "./hooks/preliminary-setup.js";
 import mainSetup from "./hooks/main-setup.js";

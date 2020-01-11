@@ -65,6 +65,7 @@ function setupContentScriptConnection() {
         }));
     });
 }
+
 function handleDomLoaded(message, port) {
     const scriptsIntercepting = getScriptsIntercepting();
     port.postMessage({

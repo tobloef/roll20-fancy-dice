@@ -1,6 +1,5 @@
 import MessageTypes from "../shared/message-types.js";
-import { hookAndInsertScripts, injectScript } from "./hooking.js";
-import logger from "../shared/logger.js";
+import {hookAndInsertScripts, injectScript} from "./hooking.js";
 import {useMessageHandlers} from "../shared/handle-messages.js";
 
 let backgroundPort;

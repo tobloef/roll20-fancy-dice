@@ -1,5 +1,4 @@
 import CustomDiceTypes from "../shared/custom-dice-types.js";
-import DiceTypes from "../shared/dice-types.js";
 import {useMessageHandlers} from "../shared/handle-messages.js";
 import {initializeValues, insertDiceChoices, insertIndividualDiceSelectors, setupUiListeners} from "./ui.js";
 

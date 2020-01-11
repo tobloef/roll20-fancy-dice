@@ -3,11 +3,11 @@ import logger from "../../shared/logger.js";
 
 const preliminarySetup = {
     name: "Preliminary setup",
-        scriptUrls: [
-    ScriptUrls.APP,
-    ScriptUrls.JQUERY,
-    ScriptUrls.STARTJS
-],
+    scriptUrls: [
+        ScriptUrls.APP,
+        ScriptUrls.JQUERY,
+        ScriptUrls.STARTJS
+    ],
     find: "",
     // language=JavaScript
     replaceWith: `

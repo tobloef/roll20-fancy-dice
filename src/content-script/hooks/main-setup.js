@@ -4,7 +4,7 @@ import DiceTypes from "../../shared/dice-types.js";
 
 const mainSetup = {
     name: "Main app setup",
-        scriptUrls: [ScriptUrls.APP],
+    scriptUrls: [ScriptUrls.APP],
     find: "function(){function cParticle(){",
     // language=JavaScript
     replaceWith: `

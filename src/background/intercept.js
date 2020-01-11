@@ -1,7 +1,7 @@
 /**
  * Urls of scripts not to intercept.
  */
-import { testString } from "../shared/utils.js";
+import {testString} from "../shared/utils.js";
 import logger from "../shared/logger.js";
 import ScriptUrls from "../shared/script-urls.js";
 

@@ -42,4 +42,5 @@ function waitForDependencies(callback) {
         }
     }, 100);
 }
- main();
+
+main();
