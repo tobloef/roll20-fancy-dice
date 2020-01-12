@@ -14,7 +14,7 @@ const createShape = {
             const white = new THREE.Color("white");
             const diceSettings = window.fancyDice.getDiceSettings(rollEvent.player);
             if (diceSettings != null) {
-                window.fancyDice.logger.debug(\`Dice settings for player \${rollEvent.player}:\`, diceSettings);
+                //window.fancyDice.logger.debug(\`Dice settings for player \${rollEvent.player}:\`, diceSettings);
             } else {
                 window.fancyDice.logger.warn(\`No dice settings found for player \${rollEvent.player}\`);
             }

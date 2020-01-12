@@ -49,9 +49,6 @@ const mainSetup = {
                 }
             });
             port.postMessage({
-                type: fancyDice.messageTypes.ROLL20_READY
-            });
-            port.postMessage({
                 type: fancyDice.messageTypes.CAMPAIGN_ID,
                 campaignId: window.campaign_id,
             });
@@ -59,9 +56,16 @@ const mainSetup = {
                 type: fancyDice.messageTypes.PLAYER_ID,
                 playerId: window.d20_player_id,
             });
-            port.postMessage({
-                type: fancyDice.messageTypes.GET_DICE_SETTINGS,
-            });
+            setTimeout(() => {
+                port.postMessage({
+                    type: fancyDice.messageTypes.ROLL20_READY
+                });
+            }, 100);
+            setTimeout(() => {
+                port.postMessage({
+                    type: fancyDice.messageTypes.GET_DICE_SETTINGS,
+                });
+            }, 200);
 
             // Load custom dice cache
             const cacheCustomDice = async () => {

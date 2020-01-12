@@ -7,6 +7,13 @@ import {
     selectDiceOverrideColor,
     selectUseDiceColorOverride
 } from "../shared/storage.js";
+import {
+    connect,
+    registerDiceSettingsHandler,
+    registerReconnectedHandler,
+    syncDiceSettings
+} from "./backend-connection.js";
+import logger from "../shared/logger.js";
 
 let backgroundPort;
 let popupPort;
@@ -57,10 +64,6 @@ function setupStorageListener() {
     });
 }
 
-async function syncDiceSettings(diceSettings) {
-    // TODO: WS
-}
-
 /**
  * Wait for the DOM to be ready to be modified.
  */
@@ -81,6 +84,7 @@ function domReady() {
         type: MessageTypes.DOM_READY
     });
     campaignInfo.title = getCampaignTitle();
+
 }
 
 /**
@@ -112,11 +116,15 @@ function sendDiceSettings(port) {
                 diceOverrideColor
             }
         };
-        await syncDiceSettings(diceSettings);
         port.postMessage({
             type: MessageTypes.DICE_SETTINGS,
             diceSettings,
         });
+        try {
+            await syncDiceSettings(playerId, campaignInfo.id, diceSettings);
+        } catch (error) {
+            logger.error("Error sending dice settings to server.", error);
+        }
     });
 }
 
@@ -124,11 +132,23 @@ function handleCampaignId(message, port) {
     campaignInfo.id = message.campaignId;
 }
 
-function handleRoll20Ready(message, port) {
+async function handleRoll20Ready(message, port) {
     roll20Ready = true;
     if (popupPort != null) {
         popupPort.postMessage(message);
     }
+    try {
+        await connect(playerId, campaignInfo.id);
+    } catch (error) {
+        logger.error("Error connecting to server.", error);
+    }
+    registerDiceSettingsHandler((diceSettings) => {
+        backgroundPort.postMessage({
+            type: MessageTypes.DICE_SETTINGS,
+            diceSettings,
+        });
+    });
+    registerReconnectedHandler(() => sendDiceSettings(backgroundPort));
 }
 
 function handleGetCampaignInfo(message, port) {
