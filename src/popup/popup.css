@@ -4,7 +4,7 @@ body, html {
     margin: 0;
     user-select: none;
     overflow: hidden;
-    max-height: 550px;
+    max-height: 600px;
     display: flex;
     flex-direction: column;
 }
@@ -107,8 +107,8 @@ p {
     font-size: large;
 }
 
-.dice.horizontal.smaller img {
-    width: 30px;
+.dice.horizontal.smaller {
+    height: 25px;
 }
 
 .dice.horizontal.smaller span {
@@ -142,7 +142,7 @@ p {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 7px;
 }
 
 .individual-dice-selector .dice-type {
@@ -150,6 +150,7 @@ p {
     width: 45px;
     text-align: right;
     margin-right: 10px;
+    font-size: 14px;
 }
 
 .individual-dice-selector .dice {
