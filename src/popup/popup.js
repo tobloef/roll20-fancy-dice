@@ -16,7 +16,7 @@ let roll20ReadyInterval;
 function setupContentScriptConnection() {
     chrome.tabs.query({url: "*://app.roll20.net/editor*"}, (tabs) => {
         contentScriptPort = chrome.tabs.connect(tabs[0].id);
-        contentScriptPort.onDisconnect.addListener((disconnectedPort) => {
+        contentScriptPort.onDisconnect.addListener(() => {
             setTimeout(setupContentScriptConnection, 100);
         });
         contentScriptPort.onMessage.addListener(useMessageHandlers(contentScriptPort, {
@@ -30,6 +30,7 @@ function handleCampaignInfo(message, port) {
     setState({
         campaignInfo: message.campaignInfo,
     });
+    chrome.storage.sync.get(null, initializeValues);
     updateCampaignInfoText();
 }
 
@@ -67,7 +68,6 @@ function getCampaignInfo() {
 document.body.onload = () => {
     insertIndividualDiceSelectors();
     insertDiceChoices(Object.values(CustomDiceTypes));
-    chrome.storage.sync.get(null, initializeValues);
     setupContentScriptConnection();
     setupUiListeners();
     roll20ReadyInterval = setInterval(() => {

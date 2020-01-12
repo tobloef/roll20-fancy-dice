@@ -3,12 +3,14 @@ import DiceTypes from "../shared/dice-types.js";
 import {getState, setState} from "./state.js";
 import {getCustomDiceTypeByKey, getFirstNotNull} from "../shared/utils.js";
 import {
+    selectCampaignToUseGlobally,
+    selectDiceChoices, selectDiceOverrideColor, selectUseDiceColorOverride, selectUseIndividualDice,
+    setCampaignToUseGlobally,
     setDiceChoices,
     setDiceOverrideColor,
     setUseDiceColorOverride,
     setUseIndividualDice,
-    setUseSelectedDiceGlobally
-} from "./storage.js";
+} from "../shared/storage.js";
 
 export function updateCampaignInfoText() {
     const {campaignInfo} = getState();
@@ -135,25 +137,32 @@ export function insertDiceChoices(customDiceTypesToUse) {
 }
 
 export function initializeValues(data) {
-    if (data["dice-choices"] != null) {
-        setState({
-            diceChoices: JSON.parse(data["dice-choices"])
-        });
-        updateSelectedDiceButtons();
+    const campaignToUseGlobally = selectCampaignToUseGlobally(data);
+    const {campaignInfo} = getState();
+    const campaignToUse = campaignToUseGlobally || campaignInfo.id;
+
+    const diceChoices = selectDiceChoices(data, campaignToUse);
+    const useDiceColorOverride = selectUseDiceColorOverride(data, campaignToUse);
+    const diceOverrideColor = selectDiceOverrideColor(data, campaignToUse);
+    const useIndividualDice = selectUseIndividualDice(data, campaignToUse);
+
+    if (diceChoices != null) {
+        setState({diceChoices: JSON.parse(diceChoices)});
     }
-    if (data["use-selected-dice-globally"] != null) {
-        document.querySelector("#use-selected-dice-globally").checked = (data["use-selected-dice-globally"]);
+    updateSelectedDiceButtons();
+    document.querySelector("#use-selected-dice-globally").checked = campaignToUseGlobally != null;
+    if (useDiceColorOverride != null) {
+        document.querySelector("#use-dice-color-override").checked = useDiceColorOverride;
     }
-    if (data["use-dice-color-override"] != null) {
-        document.querySelector("#use-dice-color-override").checked = (data["use-dice-color-override"]);
+    if (diceOverrideColor != null) {
+        document.querySelector("#dice-color-override").value = diceOverrideColor;
     }
-    if (data["dice-color-override"] != null) {
-        document.querySelector("#dice-color-override").value = (data["dice-color-override"]);
-    }
-    if (data["use-individual-dice"] != null) {
-        document.querySelector("#use-individual-dice").checked = data["use-individual-dice"];
+    if (useIndividualDice != null) {
+        document.querySelector("#use-individual-dice").checked = useIndividualDice;
         updateDiceSelectors();
     }
+
+
 }
 
 export function setupUiListeners() {
@@ -167,7 +176,12 @@ export function setupUiListeners() {
     });
 
     document.querySelector("#use-selected-dice-globally").addEventListener("input", (e) => {
-        setUseSelectedDiceGlobally(e.target.checked);
+        if (e.target.checked) {
+            const {campaignInfo} = getState();
+            setCampaignToUseGlobally(campaignInfo.id);
+        } else {
+            setCampaignToUseGlobally(null);
+        }
     });
 
     document.querySelector("#use-dice-color-override").addEventListener("input", (e) => {

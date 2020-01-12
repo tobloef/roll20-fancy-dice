@@ -11,18 +11,6 @@ setupHookingConnection();
 setupContentScriptConnection();
 setupPostInstall();
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-    for (var key in changes) {
-        var storageChange = changes[key];
-        console.log('Storage key "%s" in namespace "%s" changed. ' +
-            'Old value was "%s", new value is "%s".',
-            key,
-            namespace,
-            storageChange.oldValue,
-            storageChange.newValue);
-    }
-});
-
 function setupWebRequestListeners() {
     chrome.webRequest.onHeadersReceived.addListener(
         setCorsPolicy,
@@ -63,9 +51,14 @@ function setupPostInstall() {
 function setupHookingConnection() {
     chrome.runtime.onConnectExternal.addListener((port) => {
         hookingPort = port;
+        hookingPort.onDisconnect.addListener(() => {
+            hookingPort = null;
+        });
         hookingPort.onMessage.addListener(useMessageHandlers(hookingPort, {
             [MessageTypes.ROLL20_READY]: handleRoll20Ready,
             [MessageTypes.CAMPAIGN_ID]: handleCampaignId,
+            [MessageTypes.GET_DICE_SETTINGS]: handleGetDiceSettings,
+            [MessageTypes.PLAYER_ID]: handlePlayerId,
         }));
     });
 }
@@ -73,8 +66,12 @@ function setupHookingConnection() {
 function setupContentScriptConnection() {
     chrome.runtime.onConnect.addListener((port) => {
         contentScriptPort = port;
+        contentScriptPort.onDisconnect.addListener(() => {
+            contentScriptPort = null;
+        });
         contentScriptPort.onMessage.addListener(useMessageHandlers(contentScriptPort, {
-            [MessageTypes.DOM_READY]: handleDomLoaded
+            [MessageTypes.DOM_READY]: handleDomLoaded,
+            [MessageTypes.DICE_SETTINGS]: handleDiceSettings,
         }));
     });
 }
@@ -89,9 +86,21 @@ function handleRoll20Ready(message, port) {
 
 function handleDomLoaded(message, port) {
     const scriptsIntercepting = getScriptsIntercepting();
-    port.postMessage({
+    contentScriptPort.postMessage({
         type: MessageTypes.SCRIPTS_TO_INJECT,
         scriptUrls: scriptsIntercepting,
     });
     setScriptsIntercepting([]);
+}
+
+function handleGetDiceSettings(message, port) {
+    contentScriptPort.postMessage(message);
+}
+
+function handleDiceSettings(message, port) {
+    hookingPort.postMessage(message);
+}
+
+function handlePlayerId(message, port) {
+    contentScriptPort.postMessage(message);
 }

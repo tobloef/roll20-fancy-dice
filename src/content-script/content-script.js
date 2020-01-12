@@ -1,14 +1,21 @@
 import MessageTypes from "../shared/message-types.js";
 import {hookAndInsertScripts, injectScript} from "./hooking.js";
 import {useMessageHandlers} from "../shared/handle-messages.js";
+import {
+    selectCampaignToUseGlobally,
+    selectDiceChoices,
+    selectDiceOverrideColor,
+    selectUseDiceColorOverride
+} from "../shared/storage.js";
 
 let backgroundPort;
 let popupPort;
 let roll20Ready = false;
 let campaignInfo = {
     title: null,
-    id: null
+    id: null,
 };
+let playerId;
 
 function main() {
     if (window.fancyDice == null) {
@@ -17,6 +24,7 @@ function main() {
     setupBackgroundConnection();
     setupPopupConnection();
     waitForDomReady(domReady);
+    setupStorageListener();
 }
 
 function setupBackgroundConnection() {
@@ -25,22 +33,32 @@ function setupBackgroundConnection() {
         [MessageTypes.SCRIPTS_TO_INJECT]: handleScriptsToInject,
         [MessageTypes.CAMPAIGN_ID]: handleCampaignId,
         [MessageTypes.ROLL20_READY]: handleRoll20Ready,
+        [MessageTypes.PLAYER_ID]: handlePlayerId,
+        [MessageTypes.GET_DICE_SETTINGS]: handleGetDiceSettings,
     }));
 }
 
 function setupPopupConnection() {
     chrome.runtime.onConnect.addListener((port) => {
         popupPort = port;
-        popupPort.onDisconnect.addListener((disconnectedPort) => {
-            if (popupPort === disconnectedPort) {
-                popupPort = null;
-            }
+        popupPort.onDisconnect.addListener(() => {
+            popupPort = null;
         });
         popupPort.onMessage.addListener(useMessageHandlers(popupPort, {
             [MessageTypes.GET_ROLL20_READY]: handleGetRoll20Ready,
             [MessageTypes.GET_CAMPAIGN_INFO]: handleGetCampaignInfo,
         }));
     });
+}
+
+function setupStorageListener() {
+    chrome.storage.onChanged.addListener(() => {
+        sendDiceSettings(backgroundPort);
+    });
+}
+
+async function syncDiceSettings(diceSettings) {
+    // TODO: WS
 }
 
 /**
@@ -73,6 +91,35 @@ async function handleScriptsToInject(message, port) {
     injectScript("post-injection.js");
 }
 
+function handleGetDiceSettings(message, port) {
+    sendDiceSettings(port);
+}
+
+function sendDiceSettings(port) {
+    chrome.storage.sync.get(null, async (data) => {
+        const campaignToUseGlobally = selectCampaignToUseGlobally(data);
+        const campaignToUse = campaignToUseGlobally || campaignInfo.id;
+        let diceChoices = selectDiceChoices(data, campaignToUse);
+        const useDiceColorOverride = selectUseDiceColorOverride(data, campaignToUse);
+        const diceOverrideColor = selectDiceOverrideColor(data, campaignToUse);
+        if (diceChoices != null) {
+            diceChoices = JSON.parse(diceChoices);
+        }
+        const diceSettings = {
+            [playerId]: {
+                diceChoices,
+                useDiceColorOverride,
+                diceOverrideColor
+            }
+        };
+        await syncDiceSettings(diceSettings);
+        port.postMessage({
+            type: MessageTypes.DICE_SETTINGS,
+            diceSettings,
+        });
+    });
+}
+
 function handleCampaignId(message, port) {
     campaignInfo.id = message.campaignId;
 }
@@ -96,6 +143,10 @@ function handleGetRoll20Ready(message, port) {
         type: MessageTypes.ROLL20_READY,
         roll20Ready,
     });
+}
+
+function handlePlayerId(message, port) {
+    playerId = message.playerId;
 }
 
 function getCampaignTitle() {

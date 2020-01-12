@@ -95,10 +95,11 @@ p {
     flex-direction: row;
     align-items: center;
     padding: 5px 10px;
+    height: 40px;
 }
 
 .dice.horizontal img {
-    width: 40px;
+    height: 100%;
     margin-right: 15px;
 }
 
