@@ -22,14 +22,15 @@ const createShape = {
             let geometry;
             let materials;
             let color = playerColor;
+            if (diceSettings != null) {
+                if (diceSettings.useDiceColorOverride && diceSettings.diceOverrideColor != null) {
+                    color = new THREE.Color(+("0x" + diceSettings.diceOverrideColor.replace("#", "")));
+                }
+            }
             if (customDice != null && customDice[diceToRoll] != null) {
                 geometry = customDice[diceToRoll].geometry;
                 materials = customDice[diceToRoll].materials;
-                if (customDice.useColor) {
-                    if (diceSettings.useDiceColorOverride && diceSettings.diceOverrideColor != null) {
-                        color = new THREE.Color(+("0x" + diceSettings.diceOverrideColor.replace("#", "")));
-                    }
-                } else {
+                if (!customDice.useColor) {
                     color = white;
                 }
             } else {
