@@ -26,7 +26,7 @@ const createShape = {
                 geometry = customDice[diceToRoll].geometry;
                 materials = customDice[diceToRoll].materials;
                 if (customDice.useColor) {
-                    if (diceSettings.useDiceColorOverride || diceSettings.diceOverrideColor != null) {
+                    if (diceSettings.useDiceColorOverride && diceSettings.diceOverrideColor != null) {
                         color = new THREE.Color(+("0x" + diceSettings.diceOverrideColor.replace("#", "")));
                     }
                 } else {
@@ -34,7 +34,6 @@ const createShape = {
                 }
             } else {
                 window.fancyDice.logger.warn("No custom", diceToRoll, "found for player", rollEvent.player);
-                window.fancyDice.logger.debug("Dice cache:", fancyDice.customDiceCache);
                 geometry = p[diceToRoll];
                 materials = g[diceToRoll];
             }
