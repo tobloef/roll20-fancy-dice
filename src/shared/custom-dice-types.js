@@ -19,6 +19,11 @@ const CustomDiceTypes = {
         name: "Pearlescent",
         useColor: false,
     },
+    FUCKYEAH: {
+        key: "fuckyeah",
+        name: "Fuck/Yes!",
+        useColor: true,
+    },
 };
 
 export default CustomDiceTypes;
