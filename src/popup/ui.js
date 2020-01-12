@@ -53,21 +53,28 @@ export function updateSelectedDiceButtons() {
         document.querySelectorAll(".individual-dice-selector").forEach(element => {
             const choice = diceChoices[element.dataset.diceType];
             const button = element.querySelector(".dice");
-            setDiceChoiceButton(button, choice);
+            const customDice = getCustomDiceTypeByKey(choice);
+            setDiceChoiceButton(button, customDice);
         });
     } else {
         const choice = getFirstNotNull(Object.values(diceChoices)) || CustomDiceTypes.ORIGINAL.key;
-        setDiceChoiceButton(document.querySelector("#main-selected-dice"), choice);
+        const customDice = getCustomDiceTypeByKey(choice);
+        setDiceChoiceButton(document.querySelector("#main-selected-dice"), customDice);
     }
 }
 
-export function setDiceChoiceButton(button, choice) {
-    const image = button.querySelector("img");
+export function setDiceChoiceButton(button, customDice) {
+    const image = button.querySelector(".thumbnail");
+    const colorSupport = button.querySelector(".color-support");
+    if (customDice.useColor) {
+        colorSupport.classList.remove("hidden");
+    } else {
+        colorSupport.classList.add("hidden");
+    }
     const title = button.querySelector("span");
-    const customDiceType = getCustomDiceTypeByKey(choice);
-    image.src = `../assets/custom-dice/${customDiceType.key}/thumbnail.png`;
-    image.alt = customDiceType.name;
-    title.textContent = customDiceType.name;
+    image.src = `../assets/custom-dice/${customDice.key}/thumbnail.png`;
+    image.alt = customDice.name;
+    title.textContent = customDice.name;
 }
 
 
@@ -77,10 +84,16 @@ export function createDiceButton(classes) {
     for (const cssClass of classes) {
         button.classList.add(cssClass);
     }
-    const img = document.createElement("img");
+    const thumbnail = document.createElement("img");
+    thumbnail.classList.add("thumbnail");
     const span = document.createElement("span");
-    button.appendChild(img);
+    const colorSupport = document.createElement("img");
+    colorSupport.classList.add("hidden");
+    colorSupport.classList.add("color-support");
+    colorSupport.src = "../assets/icons/color.png";
+    button.appendChild(thumbnail);
     button.appendChild(span);
+    button.appendChild(colorSupport);
     return button;
 }
 
@@ -101,7 +114,8 @@ export function insertIndividualDiceSelectors() {
         });
         const {diceChoices} = getState();
         const choice = diceChoices[diceType] || CustomDiceTypes.ORIGINAL.key;
-        setDiceChoiceButton(button, choice);
+        const customDice = getCustomDiceTypeByKey(choice);
+        setDiceChoiceButton(button, customDice);
 
         div.appendChild(span);
         div.appendChild(button);
@@ -125,7 +139,7 @@ export function insertDiceChoices(customDiceTypesToUse) {
             goToMainPage();
             setDiceChoices(diceChoices);
         });
-        setDiceChoiceButton(button, customDice.key);
+        setDiceChoiceButton(button, customDice);
         document.querySelector("#dice-list").appendChild(button);
     }
     const spacersNeeded = 4 - (Object.keys(customDiceTypesToUse).length % 4);

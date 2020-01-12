@@ -80,6 +80,16 @@ p {
     background: #eee;
     cursor: pointer;
     border: 1px solid #ccc;
+    position: relative;
+    overflow: visible;
+}
+
+.color-support {
+    width: 20px;
+    height: 20px;
+    top: -5px;
+    right: -5px;
+    position: absolute;
 }
 
 .dice span {
@@ -98,7 +108,7 @@ p {
     height: 40px;
 }
 
-.dice.horizontal img {
+.dice.horizontal .thumbnail {
     height: 100%;
     margin-right: 15px;
 }
@@ -122,11 +132,10 @@ p {
     width: 100px;
     padding: 5px;
     font-size: medium;
-    overflow: hidden;
     box-sizing: border-box;
 }
 
-.dice.box img {
+.dice.box .thumbnail {
     width: 80px;
     height: 80px;
 }
