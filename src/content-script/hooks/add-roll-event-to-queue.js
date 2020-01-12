@@ -11,7 +11,6 @@ const addRollEventToQueue = {
             callback: !1,
             rollEvent: e
         });
-        console.log("e", e);
     `,
 };
 

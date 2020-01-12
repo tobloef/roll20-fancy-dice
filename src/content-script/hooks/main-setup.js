@@ -83,7 +83,7 @@ const mainSetup = {
                                 loader.load(url, (geometry, materials) => resolve({geometry, materials}));
                             });
                         } catch (error) {
-                            fancyDice.logger.error("Error fetching dice texture info.", error);
+                            //fancyDice.logger.error("Error fetching dice texture info.", error);
                         }
                     }
                     fancyDice.customDiceCache[customDiceType.key] = customDice;

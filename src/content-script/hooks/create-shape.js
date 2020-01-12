@@ -47,8 +47,6 @@ const createShape = {
                     diceModel.material.materials[d].uniforms.tDiffuse.value.anisotropy = u;
                 }
             }
-            console.log("diceToRoll", diceToRoll);
-            console.log("p keys", Object.keys(p));
             diceModel.promise = a;
             if ("d6" === diceToRoll) {
                 diceModel.scale.set(1.4, 1.4, 1.4);
