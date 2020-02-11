@@ -4,7 +4,10 @@ import {getState, setState} from "./state.js";
 import {getCustomDiceTypeByKey, getFirstNotNull} from "../shared/utils.js";
 import {
     selectCampaignToUseGlobally,
-    selectDiceChoices, selectDiceOverrideColor, selectUseDiceColorOverride, selectUseIndividualDice,
+    selectDiceChoices,
+    selectDiceOverrideColor,
+    selectUseDiceColorOverride,
+    selectUseIndividualDice,
     setCampaignToUseGlobally,
     setDiceChoices,
     setDiceOverrideColor,
@@ -19,7 +22,6 @@ export function updateCampaignInfoText() {
     } else {
         document.querySelector("#campaign-info").textContent = `(for ${campaignInfo.title})`;
     }
-
 }
 
 export function goToDiceSelector() {
@@ -39,10 +41,10 @@ export function goToMainPage() {
 export function updateDiceSelectors() {
     if (document.querySelector("#use-individual-dice").checked) {
         document.querySelector("#individual-selected-dice").classList.remove("hidden");
-        document.querySelector("#main-selected-dice").classList.add("hidden");
+        document.querySelector("#main-dice-selection").classList.add("hidden");
     } else {
         document.querySelector("#individual-selected-dice").classList.add("hidden");
-        document.querySelector("#main-selected-dice").classList.remove("hidden");
+        document.querySelector("#main-dice-selection").classList.remove("hidden");
     }
     updateSelectedDiceButtons();
 }
@@ -117,8 +119,17 @@ export function insertIndividualDiceSelectors() {
         const customDice = getCustomDiceTypeByKey(choice);
         setDiceChoiceButton(button, customDice);
 
+        const colorInput = document.createElement("input");
+        colorInput.classList.add("dice-color-override");
+        colorInput.type = "color";
+        colorInput.dataset.diceType = diceType;
+        colorInput.addEventListener("input", (e) => {
+            setDiceOverrideColor(e.target.value, diceType);
+        });
+
         div.appendChild(span);
         div.appendChild(button);
+        div.appendChild(colorInput);
         document.querySelector("#individual-selected-dice").appendChild(div);
     }
 }
@@ -138,6 +149,7 @@ export function insertDiceChoices(customDiceTypesToUse) {
             updateSelectedDiceButtons();
             goToMainPage();
             setDiceChoices(diceChoices);
+            updateDiceColorInputs();
         });
         setDiceChoiceButton(button, customDice);
         document.querySelector("#dice-list").appendChild(button);
@@ -157,7 +169,6 @@ export function initializeValues(data) {
 
     const diceChoices = selectDiceChoices(data, campaignToUse);
     const useDiceColorOverride = selectUseDiceColorOverride(data, campaignToUse);
-    const diceOverrideColor = selectDiceOverrideColor(data, campaignToUse);
     const useIndividualDice = selectUseIndividualDice(data, campaignToUse);
 
     if (diceChoices != null) {
@@ -167,16 +178,20 @@ export function initializeValues(data) {
     document.querySelector("#use-selected-dice-globally").checked = campaignToUseGlobally != null;
     if (useDiceColorOverride != null) {
         document.querySelector("#use-dice-color-override").checked = useDiceColorOverride;
-    }
-    if (diceOverrideColor != null) {
-        document.querySelector("#dice-color-override").value = diceOverrideColor;
+        updateDiceColorInputs();
     }
     if (useIndividualDice != null) {
         document.querySelector("#use-individual-dice").checked = useIndividualDice;
         updateDiceSelectors();
     }
-
-
+    const diceOverrideColor = selectDiceOverrideColor(data, campaignToUse, "all");
+    if (diceOverrideColor != null) {
+        document.querySelector("#main-selected-dice-color-override").value = diceOverrideColor;
+    }
+    for (const diceType of Object.keys(DiceTypes)) {
+        const diceOverrideColor = selectDiceOverrideColor(data, campaignToUse, diceType);
+        document.querySelector(`.dice-color-override[data-dice-type="${diceType}"]`).value = diceOverrideColor;
+    }
 }
 
 export function setupUiListeners() {
@@ -200,10 +215,17 @@ export function setupUiListeners() {
 
     document.querySelector("#use-dice-color-override").addEventListener("input", (e) => {
         setUseDiceColorOverride(e.target.checked);
+        updateDiceColorInputs();
     });
 
-    document.querySelector("#dice-color-override").addEventListener("input", (e) => {
-        setDiceOverrideColor(e.target.value);
+    document.querySelector("#main-selected-dice-color-override").addEventListener("input", (e) => {
+        setDiceOverrideColor(e.target.value, "all");
+    });
+
+    document.querySelectorAll(".dice-color-override").forEach(element => {
+        element.addEventListener("input", (e) => {
+            setDiceOverrideColor(e.target.value, e.target.data.diceType);
+        });
     });
 
     document.querySelector("#use-individual-dice").addEventListener("input", (e) => {
@@ -233,4 +255,27 @@ export function updateWaitingForRoll20() {
         document.querySelector("#main-page").classList.add("invisible");
         document.querySelector("#waiting-for-roll20").classList.remove("hidden");
     }
+}
+
+export function updateDiceColorInputs() {
+    const f = (colorInput, customDice, useIndividual) => {
+        console.log("f", colorInput, customDice, useIndividual);
+        colorInput.disabled = !customDice.useColor;
+        if (useIndividual) {
+            colorInput.classList.remove("hidden");
+        } else {
+            colorInput.classList.add("hidden");
+        }
+    };
+    const useIndividual = document.querySelector("#use-dice-color-override").checked;
+    const {diceChoices} = getState();
+    for (const diceType of Object.keys(DiceTypes)) {
+        const customDice = getCustomDiceTypeByKey(diceChoices[diceType]);
+        const colorInput = document.querySelector(`.dice-color-override[data-dice-type="${diceType}"]`);
+        f(colorInput, customDice, useIndividual);
+    }
+    const mainChoice = getFirstNotNull(Object.values(diceChoices)) || CustomDiceTypes.ORIGINAL.key;
+    const customDice = getCustomDiceTypeByKey(mainChoice);
+    const colorInput = document.querySelector("#main-selected-dice-color-override");
+    f(colorInput, customDice, useIndividual);
 }

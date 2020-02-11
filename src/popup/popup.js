@@ -5,7 +5,8 @@ import {
     insertDiceChoices,
     insertIndividualDiceSelectors,
     setupUiListeners,
-    stopWaitingForRoll20, updateCampaignInfoText, updateWaitingForRoll20
+    updateCampaignInfoText,
+    updateWaitingForRoll20
 } from "./ui.js";
 import MessageTypes from "../shared/message-types.js";
 import {setState} from "./state.js";

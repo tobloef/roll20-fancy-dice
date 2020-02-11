@@ -19,10 +19,13 @@
 		</div>
 		<div id="main-page" class="invisible">
 			<p class="large bold" id="selected-dice-header">Selected dice <span id="campaign-info"/></p>
-			<div class="horizontal dice" id="main-selected-dice">
-				<img class="thumbnail">
-				<span></span>
-				<img class="color-support hidden" src="../assets/icons/color.png">
+			<div id="main-dice-selection">
+				<div class="horizontal dice" id="main-selected-dice">
+					<img class="thumbnail">
+					<span></span>
+					<img class="color-support hidden" src="../assets/icons/color.png">
+				</div>
+				<input data-dice-type="all" class="hidden dice-color-override" type="color" id="main-selected-dice-color-override">
 			</div>
 			<div id="individual-selected-dice" class="hidden"></div>
 			<fieldset>
@@ -34,8 +37,6 @@
 				<div>
 					<input type="checkbox" id="use-dice-color-override">
 					<label for="use-dice-color-override">Override Roll20's dice color</label>
-					<!--suppress HtmlFormInputWithoutLabel -->
-					<input type="color" id="dice-color-override">
 				</div>
 				<div>
 					<input type="checkbox" id="use-individual-dice">

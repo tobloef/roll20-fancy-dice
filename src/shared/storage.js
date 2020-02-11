@@ -1,4 +1,5 @@
 import {getState} from "../popup/state.js";
+import DiceTypes from "./dice-types.js";
 
 function keyWithCampaignPrefix(key, campaignId) {
     if (campaignId == null) {
@@ -45,14 +46,14 @@ export function selectUseDiceColorOverride(data, campaignToUse) {
     return data[keyWithCampaignPrefix("use-dice-color-override", campaignToUse)];
 }
 
-export function setDiceOverrideColor(value) {
+export function setDiceOverrideColor(value, diceType) {
     chrome.storage.sync.set({
-        [keyWithCampaignPrefix("dice-color-override")]: value
+        [keyWithCampaignPrefix(`dice-color-override-${diceType}`)]: value
     });
 }
 
-export function selectDiceOverrideColor(data, campaignToUse) {
-    return data[keyWithCampaignPrefix("dice-color-override", campaignToUse)];
+export function selectDiceOverrideColor(data, campaignToUse, diceType) {
+    return data[keyWithCampaignPrefix(`dice-color-override-${diceType}`, campaignToUse)];
 }
 
 export function setUseIndividualDice(value) {

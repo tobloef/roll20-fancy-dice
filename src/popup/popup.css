@@ -190,10 +190,6 @@ p {
     margin-bottom: 15px;
 }
 
-#main-selected-dice {
-    margin-bottom: 10px;
-}
-
 footer a {
     color: inherit;
 }
@@ -213,4 +209,27 @@ footer a {
     height: 100%;
     top: 0;
     left: 0;
+}
+
+input[type=color]:disabled {
+    opacity: 0.25;
+}
+
+#main-dice-selection {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+#main-selected-dice {
+    flex: 1;
+}
+
+#main-selected-dice-color-override {
+    height: auto;
+    width: 60px;
+}
+
+.individual-dice-selector .dice-color-override {
+    height: 33px;
 }

@@ -5,7 +5,7 @@ import {
     selectCampaignToUseGlobally,
     selectDiceChoices,
     selectDiceOverrideColor,
-    selectUseDiceColorOverride
+    selectUseDiceColorOverride, selectUseIndividualDice,
 } from "../shared/storage.js";
 import {
     connect,
@@ -14,6 +14,7 @@ import {
     syncDiceSettings
 } from "./backend-connection.js";
 import logger from "../shared/logger.js";
+import DiceTypes from "../shared/dice-types.js";
 
 let backgroundPort;
 let popupPort;
@@ -104,8 +105,13 @@ function sendDiceSettings(port) {
         const campaignToUseGlobally = selectCampaignToUseGlobally(data);
         const campaignToUse = campaignToUseGlobally || campaignInfo.id;
         let diceChoices = selectDiceChoices(data, campaignToUse);
+        const useIndividualDice = selectUseIndividualDice(data, campaignToUse);
         const useDiceColorOverride = selectUseDiceColorOverride(data, campaignToUse);
-        const diceOverrideColor = selectDiceOverrideColor(data, campaignToUse);
+        const diceOverrideColors = {};
+        diceOverrideColors["all"] = selectDiceOverrideColor(data, campaignToUse, "all");
+        for (const diceType of Object.keys(DiceTypes)) {
+            diceOverrideColors[diceType] = selectDiceOverrideColor(data, campaignToUse, diceType);
+        }
         if (diceChoices != null) {
             diceChoices = JSON.parse(diceChoices);
         }
@@ -113,7 +119,8 @@ function sendDiceSettings(port) {
             [playerId]: {
                 diceChoices,
                 useDiceColorOverride,
-                diceOverrideColor
+                diceOverrideColors,
+                useIndividualDice
             }
         };
         port.postMessage({

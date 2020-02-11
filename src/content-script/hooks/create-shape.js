@@ -23,8 +23,15 @@ const createShape = {
             let materials;
             let color = playerColor;
             if (diceSettings != null) {
-                if (diceSettings.useDiceColorOverride && diceSettings.diceOverrideColor != null) {
-                    color = new THREE.Color(+("0x" + diceSettings.diceOverrideColor.replace("#", "")));
+                if (diceSettings.useDiceColorOverride && diceSettings.diceOverrideColors != null) {
+                    const diceType = diceSettings.useIndividualDice ? diceToRoll : "all";
+                    const diceOverrideColor = diceSettings.diceOverrideColors[diceType];
+                    console.log("TEST", diceSettings, diceType, diceOverrideColor);
+                    if (diceOverrideColor != null) {
+                        color = new THREE.Color(+("0x" + diceOverrideColor.replace("#", "")));
+                    } else {
+                        color = new THREE.Color("black");
+                    }
                 }
             }
             if (customDice != null && customDice[diceToRoll] != null) {
