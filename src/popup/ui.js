@@ -274,8 +274,8 @@ export function updateDiceColorInputs() {
         const colorInput = document.querySelector(`.dice-color-override[data-dice-type="${diceType}"]`);
         f(colorInput, customDice, useIndividual);
     }
-    const mainChoice = getFirstNotNull(Object.values(diceChoices)) || CustomDiceTypes.ORIGINAL.key;
-    const customDice = getCustomDiceTypeByKey(mainChoice);
+    const mainChoice = getFirstNotNull(Object.values(diceChoices));
+    const customDice = getCustomDiceTypeByKey(mainChoice) || getCustomDiceTypeByKey(CustomDiceTypes.ORIGINAL.key);
     const colorInput = document.querySelector("#main-selected-dice-color-override");
     f(colorInput, customDice, useIndividual);
 }
