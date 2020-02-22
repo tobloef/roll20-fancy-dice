@@ -27,7 +27,12 @@ export function updateCampaignInfoText() {
 export function goToDiceSelector() {
     document.querySelector("#main-page").classList.add("hidden");
     document.querySelector("#dice-selection-page").classList.remove("hidden");
-    document.querySelector("header h1").textContent = "Select dice";
+    let header = "Select dice";
+    const {currentDiceTypeToSelect} = getState();
+    if (currentDiceTypeToSelect !== "all") {
+        header += ` (${currentDiceTypeToSelect})`;
+    }
+    document.querySelector("header h1").textContent = header;
     document.querySelector("#back").classList.remove("hidden");
 }
 
