@@ -3,6 +3,8 @@ import {getScriptsIntercepting, interceptScripts, setScriptsIntercepting} from "
 import {useMessageHandlers} from "../shared/handle-messages.js";
 import MessageTypes from "../shared/message-types.js";
 
+const ENABLE_WELCOME_PAGE = false;
+
 let hookingPort;
 let contentScriptPort;
 
@@ -40,7 +42,7 @@ function setupPostInstall() {
                 ]
             }]);
         });
-        if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+        if (ENABLE_WELCOME_PAGE && details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
             chrome.tabs.create({
                 url: chrome.extension.getURL("welcome/welcome.html")
             });
