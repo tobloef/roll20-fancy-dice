@@ -24,6 +24,21 @@ const CustomDiceTypes = {
         name: "Fuck/Yes!",
         useColor: true,
     },
+    TEMPLATE: {
+        key: "template",
+        name: "Template",
+        useColor: true,
+    },
+    BORDER: {
+        key: "border",
+        name: "Border",
+        useColor: true,
+    },
+    BORDER_INVERTED: {
+        key: "border-inverted",
+        name: "Border Inverted",
+        useColor: true,
+    },
 };
 
 export default CustomDiceTypes;
