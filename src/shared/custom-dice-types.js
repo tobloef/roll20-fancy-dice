@@ -11,12 +11,12 @@ const CustomDiceTypes = {
     },
     FANCY: {
         key: "fancy",
-        name: "Picture Test",
+        name: "Picture Test (d6 only)",
         useColor: false,
     },
     PEARLESCENT: {
         key: "pearlescent",
-        name: "Pearlescent",
+        name: "Pearlescent (d6 only)",
         useColor: false,
     },
     FUCKYEAH: {
@@ -24,19 +24,19 @@ const CustomDiceTypes = {
         name: "Fuck/Yes!",
         useColor: true,
     },
-    TEMPLATE: {
+    /*TEMPLATE: {
         key: "template",
         name: "Template",
         useColor: true,
-    },
+    },*/
     BORDER: {
         key: "border",
-        name: "Border",
+        name: "Bordered",
         useColor: true,
     },
     BORDER_INVERTED: {
         key: "border-inverted",
-        name: "Border Inverted",
+        name: "Bordered (Inverted)",
         useColor: true,
     },
 };
