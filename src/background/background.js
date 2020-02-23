@@ -33,7 +33,7 @@ function setupPostInstall() {
                 conditions: [
                     new chrome.declarativeContent.PageStateMatcher({
                         pageUrl: {
-                            urlMatches: "https?://app.roll20.net/.*"
+                            urlMatches: "https?://app.roll20.net/editor.*"
                         },
                     })
                 ],
