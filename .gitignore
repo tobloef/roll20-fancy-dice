@@ -2,3 +2,5 @@ build/
 node_modules/
 .idea/
 build.zip
+ignored_blender/
+*.blend1
