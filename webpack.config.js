@@ -4,12 +4,20 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const sourceOutputPath = path.join(path.resolve(__dirname), "build");
 
+const ignoredFileTypes = [".psd"];
+
 module.exports = () => {
     const entry = {};
     const staticFiles = {};
 
+
     // Helper functions
-    const addStaticFile = (sourcePath, mappedName) => staticFiles[mappedName] = sourcePath;
+    const addStaticFile = (sourcePath, mappedName) => {
+        if (ignoredFileTypes.some(ift => sourcePath.endsWith(ift))) {
+            return;
+        }
+        staticFiles[mappedName] = sourcePath;
+    }
     const addEntryPoint = (sourcePath, mappedName) => entry[mappedName] = sourcePath;
     const addStaticFolder = (sourcePath, mappedName) => {
         if (!sourcePath.endsWith("/")) {
