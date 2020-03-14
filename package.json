@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "build": "webpack -w --display-error-details --progress --colors"
+        "build": "webpack --display-error-details --progress --colors"
     },
     "devDependencies": {
         "@babel/core": "7.0.0-rc.3",
