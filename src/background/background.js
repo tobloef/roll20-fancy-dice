@@ -3,7 +3,7 @@ import {getScriptsIntercepting, interceptScripts, setScriptsIntercepting} from "
 import {useMessageHandlers} from "../shared/handle-messages.js";
 import MessageTypes from "../shared/message-types.js";
 
-const ENABLE_WELCOME_PAGE = false;
+const ENABLE_WELCOME_PAGE = true;
 
 let hookingPort;
 let contentScriptPort;
