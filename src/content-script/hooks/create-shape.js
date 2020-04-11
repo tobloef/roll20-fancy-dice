@@ -34,7 +34,6 @@ const createShape = {
                 if (diceSettings.useDiceColorOverride && diceSettings.diceOverrideColors != null) {
                     const diceType = diceSettings.useIndividualDice ? diceToRoll : "all";
                     const diceOverrideColor = diceSettings.diceOverrideColors[diceType];
-                    console.log("TEST", diceSettings, diceType, diceOverrideColor);
                     if (diceOverrideColor != null) {
                         color = new THREE.Color(+("0x" + diceOverrideColor.replace("#", "")));
                     } else {
