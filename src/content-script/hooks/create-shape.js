@@ -6,11 +6,19 @@ const createShape = {
     find: /d20\.tddice\.createShape=[\w\W]+?;var L={}/,
     // language=JavaScript
     replaceWith: `        
-    d20.tddice.createShape = function (rollEvent, e, t, n, o, r, a) {
-        P = false;
-        const allDiceToRoll = "d100" === e ? ["dpct10s", "dpct1s"] : [e];
+    d20.tddice.createShape = function (rollEvent, diceToRoll, coord1, coord2, coord3, coord4, prom) {
+        let playerColorString = c;
+        let diceGeometries = p;
+        let diceMaterials = g;
+        let anisotropy = u;
+        let bodyMaterial = R;
+        let scene = n;
+        let dice = v;
+        
+        I = false;
+        const allDiceToRoll = "d100" === diceToRoll ? ["dpct10s", "dpct1s"] : [diceToRoll];
         _.each(allDiceToRoll, (diceToRoll) => {
-            const playerColor = new THREE.Color(+("0x" + c.replace("#", "")));
+            const playerColor = new THREE.Color(+("0x" + playerColorString.replace("#", "")));
             const white = new THREE.Color("white");
             const diceSettings = window.fancyDice.getDiceSettings(rollEvent.player);
             if (diceSettings != null) {
@@ -26,7 +34,6 @@ const createShape = {
                 if (diceSettings.useDiceColorOverride && diceSettings.diceOverrideColors != null) {
                     const diceType = diceSettings.useIndividualDice ? diceToRoll : "all";
                     const diceOverrideColor = diceSettings.diceOverrideColors[diceType];
-                    console.log("TEST", diceSettings, diceType, diceOverrideColor);
                     if (diceOverrideColor != null) {
                         color = new THREE.Color(+("0x" + diceOverrideColor.replace("#", "")));
                     } else {
@@ -42,8 +49,8 @@ const createShape = {
                 }
             } else {
                 window.fancyDice.logger.warn("No custom", diceToRoll, "found for player", rollEvent.player);
-                geometry = p[diceToRoll];
-                materials = g[diceToRoll];
+                geometry = diceGeometries[diceToRoll];
+                materials = diceMaterials[diceToRoll];
             }
             const diceModel = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
             diceModel.castShadow = false;
@@ -51,10 +58,10 @@ const createShape = {
                 diceModel.material.materials[d].color = color;
                 diceModel.material.materials[d].ambient = color;
                 if (diceModel.material.materials[d].uniforms) {
-                    diceModel.material.materials[d].uniforms.tDiffuse.value.anisotropy = u;
+                    diceModel.material.materials[d].uniforms.tDiffuse.value.anisotropy = anisotropy;
                 }
             }
-            diceModel.promise = a;
+            diceModel.promise = prom;
             if ("d6" === diceToRoll) {
                 diceModel.scale.set(1.4, 1.4, 1.4);
             } else {
@@ -62,45 +69,45 @@ const createShape = {
             }
             diceModel.dicetype = diceToRoll;
             diceModel.maxroll = parseInt(diceToRoll.replace("d", ""), 10);
-            const h = p[diceToRoll].vertices;
-            const f = p[diceToRoll].faces;
-            const m = [];
-            const y = [];
-            for (let b = 0; b < h.length; b++) {
-                m.push(new CANNON.Vec3(
-                    h[b].x * diceModel.scale.x,
-                    h[b].y * diceModel.scale.y,
-                    h[b].z * diceModel.scale.z
+            const vertices = geometry.vertices;
+            const faces = geometry.faces;
+            const cannons = [];
+            const faceSomethings = [];
+            for (let b = 0; b < vertices.length; b++) {
+                cannons.push(new CANNON.Vec3(
+                    vertices[b].x * diceModel.scale.x,
+                    vertices[b].y * diceModel.scale.y,
+                    vertices[b].z * diceModel.scale.z
                 ));
             }
-            for (let b = 0; b < f.length; b++) {
-                y.push([f[b].a, f[b].b, f[b].c]);
+            for (let b = 0; b < faces.length; b++) {
+                faceSomethings.push([faces[b].a, faces[b].b, faces[b].c]);
             }
             diceModel.body = new CANNON.Body({
                 mass: 1e3
             });
-            diceModel.body.material = M;
-            const w = new CANNON.ConvexPolyhedron(m, y);
-            diceModel.body.addShape(w, 0);
-            diceModel.body.position.set(t.x + (20 * k() - 10), t.y, t.z + (20 * k() - 10));
-            diceModel.body.quaternion.setFromAxisAngle(new CANNON.Vec3(r.x, r.y, r.z), r.a * Math.PI * 2);
-            diceModel.body.angularVelocity.set(o.x, o.y, o.z);
-            diceModel.body.velocity.set(n.x, n.y, n.z);
-            diceModel.body.linearDamping = .25;
-            diceModel.body.angularDamping = .25;
-            diceModel.body.isPlayingSound = !1;
-            diceModel.body.addEventListener("collide", (e) => {
-                const diceid = e.contact.bj.id;
-                const colidedwithid = e.contact.bi.id;
-                const maxvel = Math.max(Math.abs(n.x), Math.abs(n.y));
+            diceModel.body.material = bodyMaterial;
+            const polyhedron = new CANNON.ConvexPolyhedron(cannons, faceSomethings);
+            diceModel.body.addShape(polyhedron, 0);
+            diceModel.body.position.set(coord1.x + (20 * k() - 10), coord1.y, coord1.z + (20 * k() - 10));
+            diceModel.body.quaternion.setFromAxisAngle(new CANNON.Vec3(coord4.x, coord4.y, coord4.z), coord4.a * Math.PI * 2);
+            diceModel.body.angularVelocity.set(coord3.x, coord3.y, coord3.z);
+            diceModel.body.velocity.set(coord2.x, coord2.y, coord2.z);
+            diceModel.body.linearDamping = 0.25;
+            diceModel.body.angularDamping = 0.25;
+            diceModel.body.isPlayingSound = false;
+            diceModel.body.addEventListener("collide", (collideEvent) => {
+                const diceid = collideEvent.contact.bj.id;
+                const colidedwithid = collideEvent.contact.bi.id;
+                const maxvel = Math.max(Math.abs(coord2.x), Math.abs(coord2.y));
                 if (!diceModel.body.isPlayingSound) {
-                    diceModel.body.isPlayingSound = !0;
+                    diceModel.body.isPlayingSound = true;
                     W(diceid, diceModel.dicetype, colidedwithid, maxvel)
                 }
             });
             diceModel.visible = false;
-            i.add(diceModel);
-            v.push(diceModel);
+            scene.add(diceModel);
+            dice.push(diceModel);
             d20.tddice.world.add(diceModel.body);
         })
     };
