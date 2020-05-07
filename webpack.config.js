@@ -87,6 +87,6 @@ module.exports = () => {
                 return accum;
             }, [])),
         ],
-        devtool: "sourcemap"
+        devtool: "source-map"
     };
 };
