@@ -8,4 +8,6 @@ Please feel free to contribute, more dice are especially needed. The dice are ju
 
 The extension works by intercepting requests from Roll20 and injecting code to load the custom textures. The injection method itself is based on how [VTT Enhancement Suite](https://github.com/SSStormy/roll20-enhancement-suite) does it. 
 
+If you want to contribute to the project by adding your own dice, please check out [this guide on how to do just that](https://github.com/tobloef/roll20-fancy-dice/wiki/How-to-add-your-own-dice-to-the-extension).
+
 ![Screenshot of the extension](https://github.com/tobloef/roll20-fancy-dice/blob/master/screenshot.png)
