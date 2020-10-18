@@ -1,10 +1,7 @@
 {
     "name": "roll20-fancy-dice",
-    "description": "",
     "author": "Tobias Løfgren",
-    "license": "GPL-3.0",
-    "version": "1.0.0",
-    "private": true,
+    "license": "MIT",
     "scripts": {
         "build": "webpack --display-error-details --progress --colors"
     },
