@@ -264,9 +264,8 @@ export function updateWaitingForRoll20() {
 
 export function updateDiceColorInputs() {
     const f = (colorInput, customDice, useIndividual) => {
-        console.log("f", colorInput, customDice, useIndividual);
         colorInput.disabled = !customDice.useColor;
-        if (useIndividual) {
+        if (useIndividual && customDice.useColor) {
             colorInput.classList.remove("hidden");
         } else {
             colorInput.classList.add("hidden");
