@@ -59,6 +59,16 @@ const CustomDiceTypes = {
         name: "Flameo",
         useColor: false,
     },
+    MAGMA: {
+        key: "magma",
+        name: "Magma",
+        useColor: false,
+    },
+    BLUE_HUE: {
+        key: "blue-hue",
+        name: "Bluehue",
+        useColor: false,
+    },
 };
 
 export default CustomDiceTypes;
