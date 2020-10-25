@@ -9,16 +9,6 @@ const CustomDiceTypes = {
         name: "Colored Text (Black)",
         useColor: true,
     },
-    FANCY: {
-        key: "fancy",
-        name: "Picture Test (d6 only)",
-        useColor: false,
-    },
-    FUCKYEAH: {
-        key: "fuckyeah",
-        name: "Fuck/Yes!",
-        useColor: true,
-    },
     BORDER: {
         key: "border",
         name: "Bordered",
@@ -29,24 +19,10 @@ const CustomDiceTypes = {
         name: "Bordered (Inverted)",
         useColor: true,
     },
-    FUNKY: {
-        key: "funky",
-        name: "Funky",
-        useColor: false,
-    },
-    PAINTERESQUE: {
-        key: "painteresque",
-        name: "Painteresque",
-        useColor: false,
-    },
-    CHELLISH: {
-        key: "chellish",
-        name: "Chellish",
-        useColor: false,
-    },
-    CYANICE: {
-        key: "cyanice",
-        name: "Cyanice",
+    
+    BLUE_HUE: {
+        key: "blue-hue",
+        name: "Bluehue",
         useColor: false,
     },
     PURPLESTUFF: {
@@ -59,15 +35,40 @@ const CustomDiceTypes = {
         name: "Flameo",
         useColor: false,
     },
-    BLUE_HUE: {
-        key: "blue-hue",
-        name: "Bluehue",
+    CYANICE: {
+        key: "cyanice",
+        name: "Cyanice",
         useColor: false,
     },
     REGAL: {
         key: "regal",
         name: "Regal",
         useColor: true,
+    },
+    FUNKY: {
+        key: "funky",
+        name: "Funky",
+        useColor: false,
+    },
+    FUCKYEAH: {
+        key: "fuckyeah",
+        name: "Fuck/Yes!",
+        useColor: true,
+    },
+    CHELLISH: {
+        key: "chellish",
+        name: "Chellish",
+        useColor: false,
+    },
+    PAINTERESQUE: {
+        key: "painteresque",
+        name: "Painteresque",
+        useColor: false,
+    },
+    FANCY: {
+        key: "fancy",
+        name: "Picture Test (d6 only)",
+        useColor: false,
     },
 };
 
