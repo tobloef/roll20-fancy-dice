@@ -69,6 +69,11 @@ const CustomDiceTypes = {
         name: "Bluehue",
         useColor: false,
     },
+    REGAL: {
+        key: "regal",
+        name: "Regal",
+        useColor: true,
+    },
 };
 
 export default CustomDiceTypes;
