@@ -99,6 +99,11 @@ const CustomDiceTypes = {
     name: "Greataxe",
     useColor: false,
     },
+    Flower: {
+    key: "flower",
+    name: "Flower",
+    useColor: false,
+    },
 };
 
 export default CustomDiceTypes;
