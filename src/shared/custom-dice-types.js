@@ -64,6 +64,11 @@ const CustomDiceTypes = {
         name: "Painteresque",
         useColor: false,
     },
+    FANCY: {
+        key: "fancy",
+        name: "Picture Test (d6 only)",
+        useColor: false,
+    },
     RAVEN: {
         key: "raven",
         name: "Raven",
@@ -84,11 +89,11 @@ const CustomDiceTypes = {
     name: "Sun",
     useColor: false,
     },
-    FANCY: {
-        key: "fancy",
-        name: "Picture Test (d6 only)",
-        useColor: false,
-    },    
+    ANCHOR: {
+    key: "anchor",
+    name: "Anchor",
+    useColor: false,
+    },
 };
 
 export default CustomDiceTypes;
