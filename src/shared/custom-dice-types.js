@@ -19,7 +19,7 @@ const CustomDiceTypes = {
         name: "Bordered (Inverted)",
         useColor: true,
     },
-    
+
     BLUE_HUE: {
         key: "blue-hue",
         name: "Bluehue",
@@ -68,6 +68,11 @@ const CustomDiceTypes = {
     FANCY: {
         key: "fancy",
         name: "Picture Test (d6 only)",
+        useColor: false,
+    },
+    RAVEN: {
+        key: "raven",
+        name: "raven",
         useColor: false,
     },
 };
