@@ -3,19 +3,19 @@ import ScriptUrls from "../../shared/script-urls.js";
 const createShape = {
     name: "Custom createShape function declaration",
     scriptUrls: [ScriptUrls.APP],
-    find: /d20\.tddice\.createShape=[\w\W]+?;var L={}/,
+    find: /d20\.tddice\.createShape=[\w\W]+?var .;(.)=!1;var .=\[\];[\w\W]+?THREE.Mesh\((.)[\w\W]+?THREE.MeshFaceMaterial\((.)\[[\w\W]+?(.).replace\("#",""\)[\w\W]+?value\.anisotropy=(.)[\w\W]+?body.material=(.)[\w\W]+?body.position.set\(.+?(.)\(\)[\w\W]+?.body.isPlayingSound=!0,(.+?)\([\w\W]+?,(.)\.add\(.\),(.)\.push[\w\W]+?;var (.)={}/,
     // language=JavaScript
     replaceWith: `        
     d20.tddice.createShape = function (rollEvent, diceToRoll, coord1, coord2, coord3, coord4, prom) {
-        let playerColorString = c;
-        let diceGeometries = p;
-        let diceMaterials = g;
-        let anisotropy = u;
-        let bodyMaterial = R;
-        let scene = n;
-        let dice = v;
+        let playerColorString = $4;
+        let diceGeometries = $2;
+        let diceMaterials = $3;
+        let anisotropy = $5;
+        let bodyMaterial = $6;
+        let scene = $9;
+        let dice = $10;
         
-        I = false;
+        $1 = false;
         const allDiceToRoll = "d100" === diceToRoll ? ["dpct10s", "dpct1s"] : [diceToRoll];
         _.each(allDiceToRoll, (diceToRoll) => {
             const playerColor = new THREE.Color(+("0x" + playerColorString.replace("#", "")));
@@ -89,7 +89,7 @@ const createShape = {
             diceModel.body.material = bodyMaterial;
             const polyhedron = new CANNON.ConvexPolyhedron(cannons, faceSomethings);
             diceModel.body.addShape(polyhedron, 0);
-            diceModel.body.position.set(coord1.x + (20 * k() - 10), coord1.y, coord1.z + (20 * k() - 10));
+            diceModel.body.position.set(coord1.x + (20 * $7() - 10), coord1.y, coord1.z + (20 * $7() - 10));
             diceModel.body.quaternion.setFromAxisAngle(new CANNON.Vec3(coord4.x, coord4.y, coord4.z), coord4.a * Math.PI * 2);
             diceModel.body.angularVelocity.set(coord3.x, coord3.y, coord3.z);
             diceModel.body.velocity.set(coord2.x, coord2.y, coord2.z);
@@ -102,7 +102,7 @@ const createShape = {
                 const maxvel = Math.max(Math.abs(coord2.x), Math.abs(coord2.y));
                 if (!diceModel.body.isPlayingSound) {
                     diceModel.body.isPlayingSound = true;
-                    W(diceid, diceModel.dicetype, colidedwithid, maxvel)
+                    $8(diceid, diceModel.dicetype, colidedwithid, maxvel)
                 }
             });
             diceModel.visible = false;
@@ -111,7 +111,7 @@ const createShape = {
             d20.tddice.world.add(diceModel.body);
         })
     };
-    var L = {}
+    var $11 = {}
     `,
 };
 
