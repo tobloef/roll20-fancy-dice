@@ -94,6 +94,11 @@ const CustomDiceTypes = {
     name: "Anchor",
     useColor: false,
     },
+    GREATAXE: {
+    key: "greataxe",
+    name: "Greataxe",
+    useColor: false,
+    },
 };
 
 export default CustomDiceTypes;
