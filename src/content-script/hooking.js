@@ -77,7 +77,7 @@ export function injectHooks(source, hooks, url) {
         if (hookSuccessful) {
             logger.debug(`Hook "${hook.name}" successfully injected on file ${url}.`);
         } else {
-            logger.warn(`Hook "${hook.name}" failed to inject, no matching pattern in file ${url}.`);
+            logger.error(`Hook "${hook.name}" failed to inject, no matching pattern in file ${url}.`);
         }
     }
     return source;
