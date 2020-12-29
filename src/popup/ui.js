@@ -141,6 +141,9 @@ export function insertIndividualDiceSelectors() {
 
 export function insertDiceChoices(customDiceTypesToUse) {
     for (const customDice of customDiceTypesToUse) {
+        if (customDice.hidden) {
+            continue;
+        }
         const button = createDiceButton(["box"]);
         button.addEventListener("click", () => {
             const {currentDiceTypeToSelect, diceChoices} = getState();
