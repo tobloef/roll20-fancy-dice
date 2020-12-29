@@ -69,6 +69,7 @@ const mainSetup = {
 
             // Load custom dice cache
             const cacheCustomDice = async () => {
+                const startTime = Date.now();
                 const loader = new THREE.JSONLoader();
                 loader.crossOrigin = "";
                 for (const customDiceType of Object.values(fancyDice.customDiceTypes)) {
@@ -92,6 +93,7 @@ const mainSetup = {
                     }
                     fancyDice.customDiceCache[customDiceType.key] = customDice;
                 }
+                fancyDice.logger.info("Cached dice textures in ${Date.now() - startTime} ms.");
             };
             cacheCustomDice();
             function cParticle() {
