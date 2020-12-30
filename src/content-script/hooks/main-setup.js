@@ -93,7 +93,7 @@ const mainSetup = {
                     }
                     fancyDice.customDiceCache[customDiceType.key] = customDice;
                 }
-                fancyDice.logger.info("Cached dice textures in ${Date.now() - startTime} ms.");
+                fancyDice.logger.info(\`Cached dice textures in \${Date.now() - startTime} ms.\`);
             };
             cacheCustomDice();
             function cParticle() {
