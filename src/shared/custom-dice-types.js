@@ -68,6 +68,7 @@ const CustomDiceTypes = {
     key: "fancy",
     name: "Picture Test (d6 only)",
     useColor: false,
+      hidden: true
   },
   RAVEN: {
     key: "raven",
@@ -99,7 +100,7 @@ const CustomDiceTypes = {
     name: "Greataxe",
     useColor: false,
   },
-  Flower: {
+  FLOWER: {
     key: "flower",
     name: "Flower",
     useColor: false,
