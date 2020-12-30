@@ -68,7 +68,7 @@ const CustomDiceTypes = {
     key: "fancy",
     name: "Picture Test (d6 only)",
     useColor: false,
-      hidden: true
+    hidden: true
   },
   RAVEN: {
     key: "raven",
