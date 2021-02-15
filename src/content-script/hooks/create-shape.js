@@ -3,7 +3,7 @@ import ScriptUrls from "../../shared/script-urls.js";
 const createShape = {
     name: "Custom createShape function declaration",
     scriptUrls: [ScriptUrls.APP],
-    find: /d20\.tddice\.createShape=[\w\W]+?var .;(.)=!1;var .=\[\];[\w\W]+?THREE.Mesh\((.)[\w\W]+?THREE.MeshFaceMaterial\((.)\[[\w\W]+?(.).replace\("#",""\)[\w\W]+?value\.anisotropy=(.)[\w\W]+?body.material=(.)[\w\W]+?body.position.set\(.+?(.)\(\)[\w\W]+?.body.isPlayingSound=!0,(.+?)\([\w\W]+?,(.)\.add\(.\),(.)\.push[\w\W]+?;var (.)={}/,
+    find: /d20\.tddice\.createShape=[\w\W]+?var .+?;(.)=!1[\w\W]+?THREE.Mesh\((.)[\w\W]+?THREE.MeshFaceMaterial\((.)\[[\w\W]+?(.).replace\("#",""\)[\w\W]+?value\.anisotropy=(.)[\w\W]+?body.material=(.)[\w\W]+?body.position.set\(.+?(.)\(\)[\w\W]+?.body.isPlayingSound=!0,(.+?)\([\w\W]+?,(.)\.add\(.\),(.)\.push[\w\W]+?;var (.)={}/,
     // language=JavaScript
     replaceWith: `        
     d20.tddice.createShape = function (rollEvent, diceToRoll, coord1, coord2, coord3, coord4, prom) {
