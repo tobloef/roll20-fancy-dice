@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Custom Dice for Roll20",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "description": "Roll in style with this selection of custom dice and see the dice of other players with the extension installed.",
     "permissions": [
         "*://app.roll20.net/editor*",
